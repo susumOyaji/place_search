@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'MySearch.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const MySearch());
 }
 
 class MyApp extends StatelessWidget {
@@ -49,6 +50,45 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
+
+  var listM = <List>[];
+  var listB = <List>[];
+  var listT = <List>[];
+  var listP = <List>[];
+
+  var array_1 = [
+    [
+      [
+        [
+          ['43KK49277-AZ'], ['44KK48541-A'], ['44KK36886-A1'], //P1
+          ['43KK49277-AZ'], ['44KK48541-A'], ['44KK36886-A1'],
+          ['43KK49277-AZ'], ['44KK48541-A'], ['44KK36886-A1']
+        ], //T1
+        [
+          ['43KK49277-AZ'], ['44KK48541-A'], ['44KK36886-A1'], //P2
+          ['43KK49277-AZ'], ['44KK48541-A'], ['44KK36886-A1'],
+          ['43KK49277-AZ'], ['44KK48541-A'], ['44KK36886-A1']
+        ],
+        [
+          ['43KK49277-AZ'], ['44KK48541-A'], ['44KK36886-A1'], //P1
+          ['43KK49277-AZ'], ['44KK48541-A'], ['44KK36886-A1'],
+          ['43KK49277-AZ'], ['44KK48541-A'], ['44KK36886-A1']
+        ], //T1
+        [
+          ['43KK49277-AZ'], ['44KK48541-A'], ['44KK36886-A1'], //P2
+          ['43KK49277-AZ'], ['44KK48541-A'], ['44KK36886-A1'],
+          ['43KK49277-AZ'], ['44KK48541-A'], ['44KK36886-A1']
+        ] //T2
+      ], //B1
+      [] //B2
+    ], //M1
+    [] //M2
+  ];
+
+  Map<String, String> frameworks = {
+    'Flutter': 'Dart',
+    'Rails': 'Ruby',
+  };
 
   void _incrementCounter() {
     setState(() {
