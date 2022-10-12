@@ -54,7 +54,7 @@ class _SearchPageState extends State<SearchPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Search Items'),
+        title: const Text('Search PartsArea'),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -72,7 +72,7 @@ class _SearchPageState extends State<SearchPage> {
             ),
             TextField(
               controller: controller,
-              decoration: InputDecoration(hintText: 'Enter keyword'),
+              decoration: InputDecoration(hintText: 'Enter Barcodeword'),
               onChanged: (String val) {
                 search(val, isCaseSensitive: isCaseSensitive);
               },
