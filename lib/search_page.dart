@@ -13,6 +13,12 @@ class _SearchPageState extends State<SearchPage> {
   TextEditingController? controller;
   bool isCaseSensitive = false;
 
+  var frower = [];
+  var area = [];
+  var board = [];
+  var container = [];
+  var parts = ['44KK36886-A'];
+
   final List<String> searchTargets =
       List.generate(10, (index) => 'Something ${index + 1}');
 
@@ -24,6 +30,13 @@ class _SearchPageState extends State<SearchPage> {
         searchResults.clear();
       });
       return;
+    } else {
+      if (query.startsWith('A')) {
+        // 指定した文字列(パターン)で始まるか否かを調べる。
+        frower.add(query);
+        frower = frower.toSet().toList(); //重複する要素を全て削除する
+        print('Area: $frower');
+      }
     }
 
     final List<String> hitItems = searchTargets.where((element) {
@@ -42,6 +55,21 @@ class _SearchPageState extends State<SearchPage> {
   void initState() {
     super.initState();
     controller = TextEditingController();
+
+    frower = (List.generate(2, (index) => 'A${index + 1}')); //Area touroku
+    print('Frower: $frower');
+
+    area = (List.generate(10, (index) => 'B${index + 1}')); //板台車
+    print('Area: $area');
+
+    board = (List.generate(10, (index) => 'C${index + 1}')); //天箱
+    print('Board: $board');
+
+    container = (List.generate(10, (index) => 'P${index + 1}')); //部品
+    print('Container: $container');
+
+    parts = ['C1', 'B1', 'A1', 'F1']; //ｺﾝﾃﾅｰ,ﾎﾞｰﾄﾞ,ｴﾘｱ,ﾌﾛﾜｰ
+    print(parts);
   }
 
   @override
@@ -68,6 +96,31 @@ class _SearchPageState extends State<SearchPage> {
                   isCaseSensitive = newVal;
                 });
                 search(controller!.text, isCaseSensitive: newVal);
+              },
+            ),
+            TextField(
+              controller: controller,
+              decoration: InputDecoration(
+                hintText: 'Enter Barcodeword',
+                enabledBorder: OutlineInputBorder(
+                    //何もしていない時の挙動、見た目
+                    borderRadius: BorderRadius.circular(30),
+                    borderSide: BorderSide(
+                      color: Colors.greenAccent,
+                    )),
+                focusedBorder: OutlineInputBorder(
+                    //フォーカスされた時の挙動、見た目
+                    borderRadius: BorderRadius.circular(30),
+                    borderSide: BorderSide(
+                      color: Colors.amber,
+                    )),
+              ),
+              onSubmitted: (searchWord) {
+                // 別で作成した関数を返す
+                searchRecipeModel.searchRecipe(
+                  searchWord, // onSubmittedプロパティの引数に入った値を使用
+                  recipeNameAndIngredientNameList,
+                );
               },
             ),
             TextField(
