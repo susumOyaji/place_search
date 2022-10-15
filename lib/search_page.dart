@@ -31,10 +31,12 @@ class _SearchPageState extends State<SearchPage> {
       var farst = Word;
       print('Fast: $Word');
       fast = !fast;
+      print(fast);
     } else {
       var second = Word;
-      print('Fast: $Word');
-      //fast = !fast;
+      print('Second: $Word');
+      fast = !fast;
+      print(fast);
     }
   }
 
