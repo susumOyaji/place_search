@@ -121,13 +121,7 @@ class _SearchPageState extends State<SearchPage> {
                 controller!.clear();
               },
             ),
-            TextField(
-              controller: controller,
-              decoration: InputDecoration(hintText: 'Enter Barcodeword'),
-              //onChanged: (String val) {
-              //  search(val, isCaseSensitive: isCaseSensitive);
-              //},
-            ),
+            Text('data'),
             ListView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
