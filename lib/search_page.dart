@@ -18,11 +18,25 @@ class _SearchPageState extends State<SearchPage> {
   var board = [];
   var container = [];
   var parts = ['44KK36886-A'];
+  var frameworks = <String, String>{};
+  var fast = true;
 
   final List<String> searchTargets =
       List.generate(10, (index) => 'Something ${index + 1}');
 
   List<String> searchResults = [];
+
+  void _savewrdo(String Word) {
+    if (fast) {
+      var farst = Word;
+      print('Fast: $Word');
+      fast = !fast;
+    } else {
+      var second = Word;
+      print('Fast: $Word');
+      //fast = !fast;
+    }
+  }
 
   void search(String query, {bool isCaseSensitive = false}) {
     if (query.isEmpty) {
@@ -35,7 +49,7 @@ class _SearchPageState extends State<SearchPage> {
         // 指定した文字列(パターン)で始まるか否かを調べる。
         frower.add(query);
         frower = frower.toSet().toList(); //重複する要素を全て削除する
-        print('Area: $frower');
+
       }
     }
 
@@ -55,21 +69,6 @@ class _SearchPageState extends State<SearchPage> {
   void initState() {
     super.initState();
     controller = TextEditingController();
-
-    frower = (List.generate(2, (index) => 'A${index + 1}')); //Area touroku
-    print('Frower: $frower');
-
-    area = (List.generate(10, (index) => 'B${index + 1}')); //板台車
-    print('Area: $area');
-
-    board = (List.generate(10, (index) => 'C${index + 1}')); //天箱
-    print('Board: $board');
-
-    container = (List.generate(10, (index) => 'P${index + 1}')); //部品
-    print('Container: $container');
-
-    parts = ['C1', 'B1', 'A1', 'F1']; //ｺﾝﾃﾅｰ,ﾎﾞｰﾄﾞ,ｴﾘｱ,ﾌﾛﾜｰ
-    print(parts);
   }
 
   @override
@@ -116,19 +115,16 @@ class _SearchPageState extends State<SearchPage> {
                     )),
               ),
               onSubmitted: (searchWord) {
-                // 別で作成した関数を返す
-                searchRecipeModel.searchRecipe(
-                  searchWord, // onSubmittedプロパティの引数に入った値を使用
-                  recipeNameAndIngredientNameList,
-                );
+                _savewrdo(searchWord);
+                controller!.clear();
               },
             ),
             TextField(
               controller: controller,
               decoration: InputDecoration(hintText: 'Enter Barcodeword'),
-              onChanged: (String val) {
-                search(val, isCaseSensitive: isCaseSensitive);
-              },
+              //onChanged: (String val) {
+              //  search(val, isCaseSensitive: isCaseSensitive);
+              //},
             ),
             ListView.builder(
               shrinkWrap: true,
