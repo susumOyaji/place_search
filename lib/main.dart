@@ -82,7 +82,7 @@ void main() async {
   var fido = Dog(
     id: 0,
     name: 'Fido',
-    age: 35,
+    age: '35',
   );
   await insertDog(fido);
 
@@ -90,7 +90,7 @@ void main() async {
   fido = Dog(
     id: 1,
     name: 'Fido',
-    age: 17,
+    age: '17',
   );
 
   // データベースにDogのデータを挿入
@@ -102,7 +102,7 @@ void main() async {
   fido = Dog(
     id: fido.id,
     name: fido.name,
-    age: fido.age + 7,
+    age: fido.age + '7',
   );
   // データベース内のfidoを更新
   await updateDog(fido);
@@ -115,7 +115,7 @@ void main() async {
 class Dog {
   final int id;
   final String name;
-  final int age;
+  final String age;
 
   Dog({required this.id, required this.name, required this.age});
 
@@ -131,5 +131,36 @@ class Dog {
   @override
   String toString() {
     return 'Dog{id: $id, name: $name, age: $age}';
+  }
+}
+
+
+Map<String, dynamic> _portaInfoMap = {
+    "name": "Vitalflux.com",
+    "domains": ["Data Science", "Mobile", "Web"],
+    "noOfArticles": [
+      {"type": "data science", "count": 50},
+      {"type": "web", "count": 75}
+    ]
+};
+
+
+  class PortalInfo {
+    final String name;
+    final List<String> domains;
+    final List<Object> noOfArtcles;
+ 
+    PortalInfo({
+      required this.name,
+      required this.domains,
+      required this.noOfArtcles
+    });
+ 
+  factory PortalInfo.fromJson(Map<String, dynamic> parsedJson){
+    return PortalInfo(
+        name: parsedJson['name'],
+        domains : parsedJson['domains'],
+        noOfArtcles : parsedJson ['noOfArticles']
+    );
   }
 }
