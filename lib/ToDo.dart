@@ -3,14 +3,6 @@ import 'package:sqflite/sqflite.dart';
 import 'dart:async';
 import 'package:path/path.dart';
 
-class searchAreas {
-  searchAreas(this.areas, this.board);
-
-  String areas;
-  String board;
-}
-
-final searchAreas1 = {'areas': '1', 'areas': '2', 'Kawasaki': 25};
 
 class Memo {
   final int id;
@@ -115,6 +107,7 @@ class MySqlPage extends StatefulWidget {
 class _MySqlPageState extends State<MySqlPage> {
   List<Memo> _memoList = [];
   final myController = TextEditingController();
+  final myController1 = TextEditingController();
   final upDateController = TextEditingController();
   var _selectedvalue;
 
@@ -200,13 +193,14 @@ class _MySqlPageState extends State<MySqlPage> {
                         content: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: <Widget>[
-                            Text('なんでも入力してね'),
+                            Text('エリア'),
                             TextField(controller: myController),
+                            TextField(controller: myController1),
                             ElevatedButton(
                               child: Text('保存'),
                               onPressed: () async {
                                 Memo _memo =
-                                    Memo(id: 1, searchAreas: myController.text);
+                                    Memo(id: 1, searchAreas: myController.text,searcBoardS: myController.text);
                                 await Memo.insertMemo(_memo);
                                 final List<Memo> memos = await Memo.getMemos();
                                 setState(() {
@@ -270,7 +264,7 @@ class _MySqlPageState extends State<MySqlPage> {
                                   onPressed: () async {
                                     Memo updateMemo = Memo(
                                         id: _selectedvalue,
-                                        searchAreas: upDateController.text);
+                                        searchAreas: upDateController.text,searcBoardS: myController.text);
                                     await Memo.updateMemo(updateMemo);
                                     final List<Memo> memos =
                                         await Memo.getMemos();
