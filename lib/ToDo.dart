@@ -15,22 +15,22 @@ final searchAreas1 = {'areas': '1', 'areas': '2', 'Kawasaki': 25};
 class Memo {
   final int id;
   final String searchAreas;
-  //final String text1;
-  //final String text2;
+  final String searcBoardS;
 
-  Memo({required this.id, required this.searchAreas});
+  Memo(
+      {required this.id, required this.searchAreas, required this.searcBoardS});
 
-  Map<String, dynamic, dynamic> toMap() {
+  Map<String, dynamic> toMap() {
     return {
       'id': id,
-      'text': searchAreas,
-      'text1': searchAreas,
+      'areas': searchAreas,
+      'bord': searcBoardS,
     };
   }
 
   @override
   String toString() {
-    return 'Memo{id: $id, text: $text}';
+    return 'Memo{id: $id, areas: $searchAreas, bord $searcBoardS}';
   }
 
   static Future<Database> get database async {
@@ -61,7 +61,8 @@ class Memo {
     return List.generate(maps.length, (i) {
       return Memo(
         id: maps[i]['id'],
-        text: maps[i]['text'],
+        searchAreas: maps[i]['areas'],
+        searcBoardS: maps[i]['bord'],
       );
     });
   }
@@ -153,7 +154,7 @@ class _MySqlPageState extends State<MySqlPage> {
                       'ID ${_memoList[index].id}',
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
-                    title: Text('${_memoList[index].text}'),
+                    title: Text('${_memoList[index].searchAreas}'),
                     trailing: SizedBox(
                       width: 76,
                       height: 25,
@@ -205,7 +206,7 @@ class _MySqlPageState extends State<MySqlPage> {
                               child: Text('保存'),
                               onPressed: () async {
                                 Memo _memo =
-                                    Memo(id: 1, text: myController.text);
+                                    Memo(id: 1, searchAreas: myController.text);
                                 await Memo.insertMemo(_memo);
                                 final List<Memo> memos = await Memo.getMemos();
                                 setState(() {
@@ -269,7 +270,7 @@ class _MySqlPageState extends State<MySqlPage> {
                                   onPressed: () async {
                                     Memo updateMemo = Memo(
                                         id: _selectedvalue,
-                                        text: upDateController.text);
+                                        searchAreas: upDateController.text);
                                     await Memo.updateMemo(updateMemo);
                                     final List<Memo> memos =
                                         await Memo.getMemos();
