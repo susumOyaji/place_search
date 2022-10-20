@@ -84,18 +84,18 @@ void main() async {
     name: 'Fido',
     age: 35,
   );
+  await insertDog(fido);
 
-  
 
-  var bobo = Dog(
+  fido = Dog(
     id: 1,
-    name: 'Bobo',
+    name: 'Fido',
     age: 17,
   );
 
   // データベースにDogのデータを挿入
   await insertDog(fido);
-  await insertDog(bobo);
+  //await insertDog(bobo);
 
   print(await dogs());
 
