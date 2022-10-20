@@ -88,7 +88,7 @@ class Memo {
   final String text;
   final int priority;
 
-  Memo({this.id, this.text, this.priority});
+  Memo({required this.id, required this.text, required this.priority});
 
   Map<String, dynamic> toMap() {
     return {

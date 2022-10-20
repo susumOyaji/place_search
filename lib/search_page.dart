@@ -145,7 +145,7 @@ class _SearchPageState extends State<SearchPage> {
     setState(() {
       searchResults = hitItems;
       //list[0][0][0].addAll(searchAreas);
-      list.insert(2,[][][]);
+      //list.insert(2,[][][]);
 
       print(list[0][0][1]);
       print(list);

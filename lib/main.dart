@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import './search_page.dart';
+import 'ToDo.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(ToDo());
 }
 
 class MyApp extends StatelessWidget {
