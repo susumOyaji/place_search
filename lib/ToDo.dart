@@ -3,26 +3,22 @@ import 'package:sqflite/sqflite.dart';
 import 'dart:async';
 import 'package:path/path.dart';
 
-
 class Memo {
   final int id;
-  final String searchAreas;
-  final String searcBoardS;
+  final String text;
 
-  Memo(
-      {required this.id, required this.searchAreas, required this.searcBoardS});
+  Memo({required this.id, required this.text});
 
   Map<String, dynamic> toMap() {
     return {
       'id': id,
-      'areas': searchAreas,
-      'bord': searcBoardS,
+      'text': text,
     };
   }
 
   @override
   String toString() {
-    return 'Memo{id: $id, areas: $searchAreas, bord $searcBoardS}';
+    return 'Memo{id: $id, text: $text}';
   }
 
   static Future<Database> get database async {
@@ -53,8 +49,7 @@ class Memo {
     return List.generate(maps.length, (i) {
       return Memo(
         id: maps[i]['id'],
-        searchAreas: maps[i]['areas'],
-        searcBoardS: maps[i]['bord'],
+        text: maps[i]['text'],
       );
     });
   }
@@ -85,6 +80,7 @@ void main() {
 }
 
 class ToDo extends StatelessWidget {
+  const ToDo({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -107,7 +103,6 @@ class MySqlPage extends StatefulWidget {
 class _MySqlPageState extends State<MySqlPage> {
   List<Memo> _memoList = [];
   final myController = TextEditingController();
-  final myController1 = TextEditingController();
   final upDateController = TextEditingController();
   var _selectedvalue;
 
@@ -147,7 +142,7 @@ class _MySqlPageState extends State<MySqlPage> {
                       'ID ${_memoList[index].id}',
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
-                    title: Text('${_memoList[index].searchAreas}'),
+                    title: Text('${_memoList[index].text}'),
                     trailing: SizedBox(
                       width: 76,
                       height: 25,
@@ -189,31 +184,29 @@ class _MySqlPageState extends State<MySqlPage> {
               showDialog(
                   context: context,
                   builder: (_) => AlertDialog(
-                        title: Text("新規メモ作成"),
-                        content: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            Text('エリア'),
-                            TextField(controller: myController),
-                            TextField(controller: myController1),
-                            ElevatedButton(
-                              child: Text('保存'),
-                              onPressed: () async {
-                                Memo _memo =
-                                    Memo(id: 1, searchAreas: myController.text,searcBoardS: myController.text);
-                                await Memo.insertMemo(_memo);
-                                final List<Memo> memos = await Memo.getMemos();
-                                setState(() {
-                                  _memoList = memos;
-                                  _selectedvalue = null;
-                                });
-                                myController.clear();
-                                Navigator.pop(context);
-                              },
-                            ),
-                          ],
+                    title: Text("新規メモ作成"),
+                    content: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        Text('なんでも入力してね'),
+                        TextField(controller: myController),
+                        ElevatedButton(
+                          child: Text('保存'),
+                          onPressed: () async {
+                            Memo _memo = Memo(id:1,text: myController.text);
+                            await Memo.insertMemo(_memo);
+                            final List<Memo> memos = await Memo.getMemos();
+                            setState(() {
+                              _memoList = memos;
+                              _selectedvalue = null;
+                            });
+                            myController.clear();
+                            Navigator.pop(context);
+                          },
                         ),
-                      ));
+                      ],
+                    ),
+                  ));
             },
           ),
           SizedBox(height: 20),
@@ -264,10 +257,10 @@ class _MySqlPageState extends State<MySqlPage> {
                                   onPressed: () async {
                                     Memo updateMemo = Memo(
                                         id: _selectedvalue,
-                                        searchAreas: upDateController.text,searcBoardS: myController.text);
+                                        text: upDateController.text);
                                     await Memo.updateMemo(updateMemo);
                                     final List<Memo> memos =
-                                        await Memo.getMemos();
+                                    await Memo.getMemos();
                                     super.setState(() {
                                       _memoList = memos;
                                     });
