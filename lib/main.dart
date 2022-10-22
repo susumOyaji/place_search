@@ -19,9 +19,11 @@ void main() async {
 
     // dogs テーブルのデータベースを作成しています。
     // ここではSQLの解説は省きます。
+    //SQLのコマンドは全て大文字で記述されている場合が多いのでそれに習います. 
+    //sqfliteでSQL分の実行するにはexecuteというメソッドを使います.
     onCreate: (db, version) {
       return db.execute(
-        "CREATE TABLE dogs(id INTEGER PRIMARY KEY, name TEXT, age INTEGER)",
+        "CREATE TABLE dogs(id INTEGER PRIMARY KEY, name TEXT, age TXT)",
       );
     },
     // version 1のSQLiteを使用します。
