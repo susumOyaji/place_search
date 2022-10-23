@@ -1,3 +1,11 @@
+import 'dart:io';
+import 'package:flutter/services.dart';
+import 'package:path/path.dart';
+import 'package:sqflite/sqflite.dart';
+
+
+
+
 /*
 概要
 このブログポストでは、Flutterでユーザデバイスにデータを保存するためSQLiteを使う方法について説明します。
@@ -14,7 +22,7 @@ Flutterでsqfliteパッケージを使ってSQLite DBを使うため、DBを準�
 DBオープン
 SQLiteを使うためにはSQLite DBをオープンする必要があります。次のコードを使ってSQLite DBをオープンすることができます。
 */
-import 'package:sqflite/sqflite.dart';
+//import 'package:sqflite/sqflite.dart';
 //...
 var db = await openDatabase('my_db.db');
 //...
@@ -40,10 +48,33 @@ assets:
 
 //そして、次のようにSQLite DBが存在しない場合、事前に作ったDBをコピーして使えるようにすることができます。
 
-import 'dart:io';
-import 'package:flutter/services.dart';
-import 'package:path/path.dart';
-import 'package:sqflite/sqflite.dart';
+
+
+
+//モデルを使うクラスは下記のように作成します。
+class Rack {
+    final String rack_code;
+    final String container_code;
+
+
+    Rack({required this.rack_code,required this.container_code, });
+
+    Map<String, dynamic> toMap() {
+      return {
+        'id': rack_code,
+        'name': container_code,
+      };
+    }
+
+  @override
+  String toString() {
+    return 'Dog{id: $rack_code, name: $container_code}';
+  }
+}
+
+
+
+
 
 Future<Database> getDB() async {
   var databasesPath = await getDatabasesPath();
@@ -74,30 +105,7 @@ Future<Database> getDB() async {
 //FlutterでSQLiteにデータを保存したり使うためモデルクラスを定義して使うことができます。
 //これはSQLiteを使うため必須条件ではなく、SQLiteからデータを取ってくる時、またはデータを追加する時、もっt明確にするため使います。
 
-//モデルを使うクラスは下記のように作成します。
-class Rack {
-  final int rack_id;
-  final String container_code;
 
-
-  Rack({
-    required this.rack_id,
-    required this.container_code,
-    
-  });
-
-  Map<String, dynamic> toMap() {
-    return {
-      'id': rack_id,
-      'name': container_code,
-    };
-  }
-
-  @override
-  String toString() {
-    return 'Dog{id: $rack_id, name: $container_code}';
-  }
-}
 
 
 //Select
@@ -120,7 +128,7 @@ return List.generate(maps.length, (i) {
 //次のようにモデルクラスとsqfliteを使ってSQLite DBにデータを追加することができます。
 
 var rack = Rack(
-  rack_id: 0,
+  rack_code: 'A001',
   container_code: 'C001',
 );
 
@@ -130,12 +138,12 @@ await db.insert('rack', rack.toMap());
 
 //Update
 //次のようにモデルクラスとsqfliteを使ってSQLite DBにデータを更新することができます。
-await db.update('rack', rack.toMap(), where: 'id = ?', whereArgs: [rack.id]);
+await db.update('rack', rack.toMap(), where: 'id = ?', whereArgs: [rack.rack_code]);
 // await db.rawUpdate('UPDATE dogs SET age = ${dog.age} WHERE id = ${dog.id}');
 
 //Delete
 //次のようにsqfliteを使ってSQLite DBにあるデータを削除することができます。
-await db.delete('rack', where: 'id = ?', whereArgs: [rack_id]);
+await db.delete('rack', where: 'id = ?', whereArgs: [rack.rack_code]);
 // await database.rawDelete('DELETE FROM dogs WHERE id = ?', [id]);
 
 //テスト
@@ -162,7 +170,7 @@ void main() {
     File(join('assets', 'my_db.db')).copySync(join('assets', 'test.db'));
   });
 
-  ...
+  //...
 }
 
 
@@ -179,7 +187,7 @@ void main() {
     var maps = await db.query('rack');
     var list = List.generate(maps.length, (i) {
       return Rack(
-        rack_id: maps[i]['id'],
+        rack_code: maps[i]['rack'],
         container_code: maps[i]['name'],
       );
     });
@@ -194,44 +202,42 @@ void main() {
 //Insertテスト
 //次のようにsqflite_ffiを使ってInsertクエリをテストすることができます。
 
-...
+//...
 void main() {
-  ...
+  //...
   test('Insert', () async {
     var db = await databaseFactoryFfi.openDatabase('../../../assets/test.db');
     var dataProvider = DataProvider(db: db);
 
-    var dog = Dog(
-      id: 1,
-      name: 'Fido',
-      age: 35,
+    var dog = Rack(
+      rack_code: 'aoo1',
+      container_code: 'Fido',
     );
-    await db.insert('dogs', dog.toMap());
+    await db.insert('rack', dog.toMap());
 
     var maps = await db.rawQuery(
-      'SELECT name FROM dogs WHERE id=${dog.id}',
+      'SELECT name FROM dogs WHERE id=${rack.rack_code}',
     );
     expect(maps[0].name, dog.name);
   });
-  ...
+  //...
 }
 
 
 
-Updateテスト
-次のようにsqflite_ffiを使ってUpdateクエリをテストすることができます。
+//Updateテスト
+//次のようにsqflite_ffiを使ってUpdateクエリをテストすることができます。
 
-...
+//...
 void main() {
-  ...
+  //...
   test('Update', () async {
     var db = await databaseFactoryFfi.openDatabase('../../../assets/test.db');
     var dataProvider = DataProvider(db: db);
 
-    var dog = Dog(
-      id: 0,
-      name: 'Fido',
-      age: 10,
+    var dog = Rack(
+      rack_code: 'A002',
+      container_code: 'C002',
     );
     await db.update('dogs', dog.toMap(), where: 'id = ?', whereArgs: [dog.id]);
 
@@ -240,36 +246,35 @@ void main() {
     );
     expect(maps[0].age, 10);
   });
-  ...
+  //...
 }
 
 
-Deleteテスト
-次のようにsqflite_ffiを使ってDeleteクエリをテストすることができます。
+//Deleteテスト
+//次のようにsqflite_ffiを使ってDeleteクエリをテストすることができます。
 
-...
+//...
 void main() {
-  ...
+  //...
   test('Delete', () async {
     var db = await databaseFactoryFfi.openDatabase('../../../assets/test.db');
     var dataProvider = DataProvider(db: db);
 
-    var dog = Dog(
-      id: 0,
-      name: 'Fido',
-      age: 35,
+    var dog = Rack(
+      rack_id: 0,
+      container_code: 'Fido',
     );
-    await db.delete('dogs', where: 'id = ?', whereArgs: [id]);
+    await db.delete('dogs', where: 'id = ?', whereArgs: [rack_id]);
 
     var maps = await db.rawQuery(
-      'SELECT * FROM dogs WHERE id=$dog.id',
+      'SELECT * FROM dogs WHERE id=$rack.id',
     );
     expect(maps.length, 0);
   });
 }
 
 
-完了
-これでFlutterでSQLiteを使うためsqfliteパッケージを使う方法についてみてみました。皆さんもSQLiteを使ってユーザのデバイスにデータを保存して使ってみてください。
+//完了
+//これでFlutterでSQLiteを使うためsqfliteパッケージを使う方法についてみてみました。皆さんもSQLiteを使ってユーザのデバイスにデータを保存して使ってみてください。
 
 
