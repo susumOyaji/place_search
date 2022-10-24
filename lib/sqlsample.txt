@@ -70,15 +70,26 @@ class Rack {
   String toString() {
     return 'Dog{id: $rack_code, name: $container_code}';
   }
-}
 
 
 
+  static Future<Database> get database async {
+    final Future<Database> _database = openDatabase(
+      join(await getDatabasesPath(), 'tock_database.db'),
+      onCreate: (db, version) {
+        return db.execute(
+          "CREATE TABLE memo(id INTEGER PRIMARY KEY AUTOINCREMENT, text TEXT)",
+        );
+      },
+      version: 1,
+    );
+    return _database;
+  }
 
 
-Future<Database> getDB() async {
+  Future<Database> getDB() async {
   var databasesPath = await getDatabasesPath();
-  var path = join(databasesPath, '~www/data.db');
+  var path = join(databasesPath, 'stock_database.db');
   var exists = await databaseExists(path);
 
   if (!exists) {
@@ -97,6 +108,27 @@ Future<Database> getDB() async {
 
   return await openDatabase(path);
 }
+
+
+
+
+}//class Rack
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
 
 //使い方
 //sqfliteを使ってSQLite DBにデータをCRUD(Create, Read, Update, Delete)する方法について説明します。
@@ -145,6 +177,9 @@ await db.update('rack', rack.toMap(), where: 'id = ?', whereArgs: [rack.rack_cod
 //次のようにsqfliteを使ってSQLite DBにあるデータを削除することができます。
 await db.delete('rack', where: 'id = ?', whereArgs: [rack.rack_code]);
 // await database.rawDelete('DELETE FROM dogs WHERE id = ?', [id]);
+
+
+
 
 //テスト
 //SQLiteは基本的ユーザのデバイスにDBが生成されて、

@@ -19,11 +19,9 @@ void main() async {
 
     // dogs テーブルのデータベースを作成しています。
     // ここではSQLの解説は省きます。
-    //SQLのコマンドは全て大文字で記述されている場合が多いのでそれに習います. 
-    //sqfliteでSQL分の実行するにはexecuteというメソッドを使います.
     onCreate: (db, version) {
       return db.execute(
-        "CREATE TABLE dogs(id INTEGER PRIMARY KEY, name TEXT, age TXT)",
+        "CREATE TABLE dogs(id INTEGER PRIMARY KEY, location TEXT, rack TEXT, contaner TEXT, part TEXT )",
       );
     },
     // version 1のSQLiteを使用します。
@@ -43,19 +41,23 @@ void main() async {
   }
 
   Future<List<Dog>> dogs() async {
+
     final Database db = await database;
     final List<Map<String, dynamic>> maps = await db.query('dogs');
     return List.generate(maps.length, (i) {
       return Dog(
         id: maps[i]['id'],
-        name: maps[i]['name'],
-        age: maps[i]['age'],
+        location: maps[i]['Location'],
+        rack: maps[i]['Rack'],
+        contaner: maps[i]['Cantaner'],
+        part: maps[i]['Part'],  
       );
     });
   }
 
   // DB内にあるデータを更新するための関数
   Future<void> updateDog(Dog dog) async {
+
     final db = await database;
 
     await db.update(
@@ -66,8 +68,10 @@ void main() async {
     );
   }
 
-  // DBからデータを削除するための関数
+ // DBからデータを削除するための関数
   Future<void> deleteDog(int id) async {
+
+
     // Get a reference to the database.
     final db = await database;
 
@@ -80,31 +84,40 @@ void main() async {
     );
   }
 
+
+
+
   // 具体的なデータ
   var fido = Dog(
     id: 0,
-    name: 'Fido',
-    age: '35',
+    location: 'Fido',
+    rack: '35',
+    contaner: '1',
+    part: '1',  
   );
-  await insertDog(fido);
 
-
-  fido = Dog(
+  var bobo = Dog(
     id: 1,
-    name: 'Fido',
-    age: '17',
+    location: 'Bobo',
+    rack: '17',
+    contaner: '2',
+    part: '2',  
   );
 
   // データベースにDogのデータを挿入
   await insertDog(fido);
-  //await insertDog(bobo);
+  await insertDog(bobo);
 
   print(await dogs());
 
+
+
   fido = Dog(
     id: fido.id,
-    name: fido.name,
-    age: fido.age + '7',
+    location: fido.location,
+    rack: fido.rack + '7',
+    contaner: '',
+    part: '',  
   );
   // データベース内のfidoを更新
   await updateDog(fido);
@@ -112,57 +125,31 @@ void main() async {
   // fidoのアップデートを表示
   print("updated DB");
   print(await dogs());
+
 }
 
 class Dog {
   final int id;
-  final String name;
-  final String age;
+  final String location;
+  final String rack;
+  final String contaner;
+  final String part;
 
-  Dog({required this.id, required this.name, required this.age});
+  Dog({required this.id, required this.location, required this.rack, required this.contaner,required this.part});
 
   Map<String, dynamic> toMap() {
     return {
       'id': id,
-      'name': name,
-      'age': age,
+      'Location': location,
+      'Rack': rack,
+      'Contaner': contaner,
+      'Part': part,
     };
   }
-
-  //printで見やすくするための実装
+  
+ //printで見やすくするための実装
   @override
   String toString() {
-    return 'Dog{id: $id, name: $name, age: $age}';
-  }
-}
-
-
-Map<String, dynamic> _portaInfoMap = {
-    "name": "Vitalflux.com",
-    "domains": ["Data Science", "Mobile", "Web"],
-    "noOfArticles": [
-      {"type": "data science", "count": 50},
-      {"type": "web", "count": 75}
-    ]
-};
-
-
-  class PortalInfo {
-    final String name;
-    final List<String> domains;
-    final List<Object> noOfArtcles;
- 
-    PortalInfo({
-      required this.name,
-      required this.domains,
-      required this.noOfArtcles
-    });
- 
-  factory PortalInfo.fromJson(Map<String, dynamic> parsedJson){
-    return PortalInfo(
-        name: parsedJson['name'],
-        domains : parsedJson['domains'],
-        noOfArtcles : parsedJson ['noOfArticles']
-    );
+    return 'Dog{id: $id, Location: $location, Rack: $rack, Contaner: $contaner, Part:$part}';
   }
 }

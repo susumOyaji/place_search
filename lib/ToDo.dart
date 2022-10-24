@@ -6,19 +6,21 @@ import 'package:path/path.dart';
 class Memo {
   final int id;
   final String text;
+  final String rack;
 
-  Memo({required this.id, required this.text});
+  Memo({required this.id, required this.text,required this.rack});
 
   Map<String, dynamic> toMap() {
     return {
       'id': id,
       'text': text,
+      'rack':rack,
     };
   }
 
   @override
   String toString() {
-    return 'Memo{id: $id, text: $text}';
+    return 'Memo{id: $id, text: $text, rack: $text}';
   }
 
   static Future<Database> get database async {
@@ -26,13 +28,20 @@ class Memo {
       join(await getDatabasesPath(), 'memo_database.db'),
       onCreate: (db, version) {
         return db.execute(
-          "CREATE TABLE memo(id INTEGER PRIMARY KEY AUTOINCREMENT, text TEXT)",
+          "CREATE TABLE memo(id INTEGER PRIMARY KEY AUTOINCREMENT, text TEXT, rack TEXT)",
         );
       },
       version: 1,
     );
     return _database;
   }
+
+
+
+
+
+
+
 
   static Future<void> insertMemo(Memo memo) async {
     final Database db = await database;
@@ -50,6 +59,7 @@ class Memo {
       return Memo(
         id: maps[i]['id'],
         text: maps[i]['text'],
+        rack: maps[i]['rack'],
       );
     });
   }
@@ -73,7 +83,12 @@ class Memo {
       whereArgs: [id],
     );
   }
-}
+}//class Memo
+
+
+
+
+
 
 void main() {
   runApp(ToDo());
@@ -120,7 +135,7 @@ class _MySqlPageState extends State<MySqlPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('メモアプリ'),
+        title: Text('SqlApp'),
       ),
       body: Container(
         padding: EdgeInsets.all(32),
@@ -184,16 +199,16 @@ class _MySqlPageState extends State<MySqlPage> {
               showDialog(
                   context: context,
                   builder: (_) => AlertDialog(
-                    title: Text("新規メモ作成"),
+                    title: Text("新規作成"),
                     content: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: <Widget>[
-                        Text('なんでも入力してね'),
+                        Text('Entry'),
                         TextField(controller: myController),
                         ElevatedButton(
                           child: Text('保存'),
                           onPressed: () async {
-                            Memo _memo = Memo(id:1,text: myController.text);
+                            Memo _memo = Memo(id: _memoList.length,text: myController.text,rack: 'Input rack');
                             await Memo.insertMemo(_memo);
                             final List<Memo> memos = await Memo.getMemos();
                             setState(() {
@@ -257,7 +272,7 @@ class _MySqlPageState extends State<MySqlPage> {
                                   onPressed: () async {
                                     Memo updateMemo = Memo(
                                         id: _selectedvalue,
-                                        text: upDateController.text);
+                                        text: upDateController.text, rack:'input2 rack');
                                     await Memo.updateMemo(updateMemo);
                                     final List<Memo> memos =
                                     await Memo.getMemos();
