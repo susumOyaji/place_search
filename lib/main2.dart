@@ -7,6 +7,37 @@ import 'package:sqflite/sqflite.dart';
 // sqflite:
 //  path:
 
+class Dog {
+  final int id;
+  final String location;
+  final String rack;
+  final String contaner;
+  final String part;
+
+  Dog(
+      {required this.id,
+      required this.location,
+      required this.rack,
+      required this.contaner,
+      required this.part});
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'Location': location,
+      'Rack': rack,
+      'Contaner': contaner,
+      'Part': part,
+    };
+  }
+
+  //printで見やすくするための実装
+  @override
+  String toString() {
+    return 'Dog{id: $id, Location: $location, Rack: $rack, Contaner: $contaner, Part:$part}';
+  }
+}
+
 void main() async {
   // このソースコードはWidgetで視覚化しておらず、結果は全てコンソール上に出力しています。
   // 出力結果は最後に表示させます。
@@ -21,13 +52,15 @@ void main() async {
     // ここではSQLの解説は省きます。
     onCreate: (db, version) {
       return db.execute(
-        "CREATE TABLE dogs(id INTEGER PRIMARY KEY, location TEXT, rack TEXT, contaner TEXT, part TEXT )",
+        "CREATE TABLE dogs(id INTEGER PRIMARY KEY AUTOINCREMENT, Location TEXT, Rack TEXT, Contaner TEXT, Part TEXT )",
       );
     },
     // version 1のSQLiteを使用します。
     version: 1,
   );
 
+  
+  
   // DBにデータを挿入するための関数です。
   Future<void> insertDog(Dog dog) async {
     // データベースのリファレンスを取得します。
@@ -40,8 +73,9 @@ void main() async {
     );
   }
 
-  Future<List<Dog>> dogs() async {
 
+
+  Future<List<Dog>> dogs() async {
     final Database db = await database;
     final List<Map<String, dynamic>> maps = await db.query('dogs');
     return List.generate(maps.length, (i) {
@@ -50,14 +84,13 @@ void main() async {
         location: maps[i]['Location'],
         rack: maps[i]['Rack'],
         contaner: maps[i]['Cantaner'],
-        part: maps[i]['Part'],  
+        part: maps[i]['part'],
       );
     });
   }
 
   // DB内にあるデータを更新するための関数
   Future<void> updateDog(Dog dog) async {
-
     final db = await database;
 
     await db.update(
@@ -68,10 +101,8 @@ void main() async {
     );
   }
 
- // DBからデータを削除するための関数
+  // DBからデータを削除するための関数
   Future<void> deleteDog(int id) async {
-
-
     // Get a reference to the database.
     final db = await database;
 
@@ -84,16 +115,13 @@ void main() async {
     );
   }
 
-
-
-
   // 具体的なデータ
   var fido = Dog(
     id: 0,
     location: 'Fido',
     rack: '35',
     contaner: '1',
-    part: '1',  
+    part: '1',
   );
 
   var bobo = Dog(
@@ -101,7 +129,7 @@ void main() async {
     location: 'Bobo',
     rack: '17',
     contaner: '2',
-    part: '2',  
+    part: '2',
   );
 
   // データベースにDogのデータを挿入
@@ -110,14 +138,12 @@ void main() async {
 
   print(await dogs());
 
-
-
   fido = Dog(
     id: fido.id,
     location: fido.location,
     rack: fido.rack + '7',
     contaner: '',
-    part: '',  
+    part: '',
   );
   // データベース内のfidoを更新
   await updateDog(fido);
@@ -125,31 +151,4 @@ void main() async {
   // fidoのアップデートを表示
   print("updated DB");
   print(await dogs());
-
-}
-
-class Dog {
-  final int id;
-  final String location;
-  final String rack;
-  final String contaner;
-  final String part;
-
-  Dog({required this.id, required this.location, required this.rack, required this.contaner,required this.part});
-
-  Map<String, dynamic> toMap() {
-    return {
-      'id': id,
-      'Location': location,
-      'Rack': rack,
-      'Contaner': contaner,
-      'Part': part,
-    };
-  }
-  
- //printで見やすくするための実装
-  @override
-  String toString() {
-    return 'Dog{id: $id, Location: $location, Rack: $rack, Contaner: $contaner, Part:$part}';
-  }
 }
