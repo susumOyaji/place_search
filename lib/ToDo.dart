@@ -34,7 +34,7 @@ class Memo {
       // pathをデータベースに設定しています。
       // 'path'パッケージからの'join'関数を使用する事は、DBをお互い（iOS, Android）のプラットフォームに構築し、
       // pathを確保するのに良い方法です。
-      join(await getDatabasesPath(), 'memo_database.db'),
+      join(await getDatabasesPath(), 'memo_database1.db'),
 
       // Memo テーブルのデータベースを作成しています。
       // ここではSQLの解説は省きます。
@@ -141,9 +141,13 @@ class _MySqlPageState extends State<MySqlPage> {
 
   List<String> searcParts = List.generate(1200, (index) => 'P ${index + 1}');
 
+  String _text = 'non';
+
+ 
+
   Future<String> initializeDemo() async {
     _memoList = await Memo.getMemos();
-    return Future.delayed(new Duration(seconds: 3), () {
+    return Future.delayed(new Duration(seconds: 1), () {
       return "initializeDemo completed!!";
     });
   }
@@ -236,6 +240,11 @@ class _MySqlPageState extends State<MySqlPage> {
     controller!.dispose();
   }
   */
+  void _handleText(String e) {
+    setState(() {
+      _text = e;
+    });
+  }
 
   Future<String> sampleFutureFunc() async {
     return Future.delayed(new Duration(seconds: 5), () {
@@ -275,6 +284,13 @@ class _MySqlPageState extends State<MySqlPage> {
               search(controller!.text, isCaseSensitive: newVal);
             },
           ),
+          Text(
+            "$_text",
+            style: TextStyle(
+                color: Colors.orangeAccent,
+                fontSize: 30.0,
+                fontWeight: FontWeight.w500),
+          ),
           TextField(
             controller: controller,
             decoration: InputDecoration(
@@ -293,6 +309,7 @@ class _MySqlPageState extends State<MySqlPage> {
                   )),
             ),
             onSubmitted: (searchWord) {
+              _handleText(searchWord);
               _savewrdo(searchWord);
               controller!.clear();
             },
@@ -300,23 +317,19 @@ class _MySqlPageState extends State<MySqlPage> {
               search(val, isCaseSensitive: isCaseSensitive);
             },
           ),
-          ListTile(
-            leading: Icon(Icons.access_time_filled_rounded),
-            title: Text('This is title'),
-            subtitle: Text('This is subtitle'),
-            trailing: Icon(Icons.more_vert),
-          ),
-          ListTile(
-            leading: Icon(Icons.face),
-            title: Text('This is title'),
-            subtitle: Text('This is subtitle'),
-            trailing: Icon(Icons.more_vert),
-          ),
-          ListTile(
-            leading: Icon(Icons.face),
-            title: Text('This is title'),
-            subtitle: Text('This is subtitle'),
-            trailing: Icon(Icons.more_vert),
+          ListView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: searchResults.length,
+            itemBuilder: (BuildContext context, int index) {
+              return ListTile(
+                title: HighlightedText(
+                  wholeString: searchResults[index],
+                  highlightedString: controller!.text,
+                  isCaseSensitive: isCaseSensitive,
+                ),
+              );
+            },
           ),
         ],
       ),
