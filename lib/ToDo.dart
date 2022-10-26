@@ -300,7 +300,24 @@ class _MySqlPageState extends State<MySqlPage> {
               search(val, isCaseSensitive: isCaseSensitive);
             },
           ),
-          Text(''),
+          ListTile(
+            leading: Icon(Icons.access_time_filled_rounded),
+            title: Text('This is title'),
+            subtitle: Text('This is subtitle'),
+            trailing: Icon(Icons.more_vert),
+          ),
+          ListTile(
+            leading: Icon(Icons.face),
+            title: Text('This is title'),
+            subtitle: Text('This is subtitle'),
+            trailing: Icon(Icons.more_vert),
+          ),
+          ListTile(
+            leading: Icon(Icons.face),
+            title: Text('This is title'),
+            subtitle: Text('This is subtitle'),
+            trailing: Icon(Icons.more_vert),
+          ),
         ],
       ),
     );
