@@ -154,15 +154,11 @@ class _SearchPageState extends State<SearchPageORG> {
             Center(
               child: FutureBuilder(
                 future: initializeDemo(),
-                builder: (BuildContext context, AsyncSnapshot snapshot) {
-                //  if (snapshot.connectionState == ConnectionState.waiting) {
-                //    return Center(
-                //      child: CircularProgressIndicator(),
-                      //child: Text(snapshot.data),
-                //    );
-                //  } else {
-                //    return Text(snapshot.data); //CircularProgressIndicator();
-                //  }
+                builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+                  // 通信中はスピナーを表示
+                  if (snapshot.connectionState != ConnectionState.done) {
+                    return CircularProgressIndicator();
+                  }
                 },
               ),
             ),
