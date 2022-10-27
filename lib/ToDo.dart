@@ -141,9 +141,7 @@ class _MySqlPageState extends State<MySqlPage> {
 
   List<String> searcParts = List.generate(1200, (index) => 'P ${index + 1}');
 
-  String _text = 'non';
-
- 
+  String _text = '';
 
   Future<String> initializeDemo() async {
     _memoList = await Memo.getMemos();
@@ -161,6 +159,7 @@ class _MySqlPageState extends State<MySqlPage> {
   void _savewrdo(String Word) {
     if (fast) {
       var farst = Word;
+      _text = "Fast parameters"+ Word;
       print('Fast: $Word');
       fast = !fast;
       print(fast);
@@ -288,7 +287,7 @@ class _MySqlPageState extends State<MySqlPage> {
             "$_text",
             style: TextStyle(
                 color: Colors.orangeAccent,
-                fontSize: 30.0,
+                fontSize: 20.0,
                 fontWeight: FontWeight.w500),
           ),
           TextField(
@@ -308,12 +307,14 @@ class _MySqlPageState extends State<MySqlPage> {
                     color: Colors.amber,
                   )),
             ),
-            onSubmitted: (searchWord) {//ユーザーがフィールドのテキストの編集を完了(return key to push)したことを示したときに呼び出されます
+            onSubmitted: (searchWord) {
+              //ユーザーがフィールドのテキストの編集を完了(return key to push)したことを示したときに呼び出されます
               _handleText(searchWord);
               _savewrdo(searchWord);
               controller!.clear();
             },
-            onChanged: (String val) {//ユーザーがデバイス上でTextFieldの値を変更した場合のみ発動される.
+            onChanged: (String val) {
+              //ユーザーがデバイス上でTextFieldの値を変更した場合のみ発動される.
               search(val, isCaseSensitive: isCaseSensitive);
             },
           ),
