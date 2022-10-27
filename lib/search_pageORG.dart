@@ -19,13 +19,12 @@ class Memo {
     };
   }
 
-
   static Future<Database> get database async {
     final Future<Database> _database = openDatabase(
       // pathをデータベースに設定しています。
       // 'path'パッケージからの'join'関数を使用する事は、DBをお互い（iOS, Android）のプラットフォームに構築し、
       // pathを確保するのに良い方法です。
-      join(await getDatabasesPath(), 'memo_database.db'),
+      join(await getDatabasesPath(), 'memo_database1.db'),
 
       // Memo テーブルのデータベースを作成しています。
       // ここではSQLの解説は省きます。
@@ -39,8 +38,7 @@ class Memo {
     return _database;
   }
 
-
-   // DBにデータを挿入するための関数です。
+  // DBにデータを挿入するための関数です。
   static Future<void> insertMemo(Memo memo) async {
     final Database db = await database;
     await db.insert(
@@ -50,8 +48,7 @@ class Memo {
     );
   }
 
-
-   static Future<List<Memo>> getMemos() async {
+  static Future<List<Memo>> getMemos() async {
     final Database db = await database;
     final List<Map<String, dynamic>> maps = await db.query('memo');
     return List.generate(maps.length, (i) {
@@ -62,7 +59,6 @@ class Memo {
       );
     });
   }
-
 
   // DB内にあるデータを更新するための関数
   static Future<void> updateMemo(Memo memo) async {
@@ -85,17 +81,7 @@ class Memo {
       whereArgs: [id],
     );
   }
-  
-  
-  } //class Memo
-
-
-
-
-
-
-
-
+} //class Memo
 
 class SearchPageORG extends StatefulWidget {
   const SearchPageORG({Key? key}) : super(key: key);
@@ -107,6 +93,15 @@ class SearchPageORG extends StatefulWidget {
 class _SearchPageState extends State<SearchPageORG> {
   TextEditingController? controller;
   bool isCaseSensitive = false;
+  List<Memo> _memoList = [];
+
+
+  Future<String> initializeDemo() async {
+    _memoList = await Memo.getMemos();
+    return Future.delayed(new Duration(seconds: 1), () {
+      return "initializeDemo completed!!";
+    });
+  }
 
   final List<String> searchTargets =
       List.generate(10, (index) => 'Something ${index + 1}');
@@ -145,6 +140,7 @@ class _SearchPageState extends State<SearchPageORG> {
     controller!.dispose();
   }
 
+ 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -155,6 +151,21 @@ class _SearchPageState extends State<SearchPageORG> {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
+            Center(
+              child: FutureBuilder(
+                future: initializeDemo(),
+                builder: (BuildContext context, AsyncSnapshot snapshot) {
+                //  if (snapshot.connectionState == ConnectionState.waiting) {
+                //    return Center(
+                //      child: CircularProgressIndicator(),
+                      //child: Text(snapshot.data),
+                //    );
+                //  } else {
+                //    return Text(snapshot.data); //CircularProgressIndicator();
+                //  }
+                },
+              ),
+            ),
             SwitchListTile(
               title: const Text('Case Sensitive'),
               value: isCaseSensitive,
