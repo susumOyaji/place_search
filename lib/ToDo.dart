@@ -308,12 +308,12 @@ class _MySqlPageState extends State<MySqlPage> {
                     color: Colors.amber,
                   )),
             ),
-            onSubmitted: (searchWord) {
+            onSubmitted: (searchWord) {//ユーザーがフィールドのテキストの編集を完了(return key to push)したことを示したときに呼び出されます
               _handleText(searchWord);
               _savewrdo(searchWord);
               controller!.clear();
             },
-            onChanged: (String val) {
+            onChanged: (String val) {//ユーザーがデバイス上でTextFieldの値を変更した場合のみ発動される.
               search(val, isCaseSensitive: isCaseSensitive);
             },
           ),
