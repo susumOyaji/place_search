@@ -3,6 +3,7 @@ import 'package:sqflite/sqflite.dart';
 import 'dart:async';
 import 'package:path/path.dart';
 import './highlighted_text.dart';
+import 'dart:io';
 
 class Memo {
   final int id;
@@ -18,6 +19,25 @@ class Memo {
       'rack': rack,
     };
   }
+
+  //printで見やすくするための実装
+  @override
+  String toString() {
+    return 'Memo{id: $id, text: $text, rack: $rack}';
+  }
+} //class Memo
+
+class SearchPageORG extends StatefulWidget {
+  const SearchPageORG({Key? key}) : super(key: key);
+
+  @override
+  _SearchPageState createState() => _SearchPageState();
+}
+
+class _SearchPageState extends State<SearchPageORG> {
+  TextEditingController? controller;
+  bool isCaseSensitive = false;
+  List<Memo> _memoList = [];
 
   static Future<Database> get database async {
     final Future<Database> _database = openDatabase(
@@ -38,16 +58,6 @@ class Memo {
     return _database;
   }
 
-  // DBにデータを挿入するための関数です。
-  static Future<void> insertMemo(Memo memo) async {
-    final Database db = await database;
-    await db.insert(
-      'memo',
-      memo.toMap(),
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
-  }
-
   static Future<List<Memo>> getMemos() async {
     final Database db = await database;
     final List<Map<String, dynamic>> maps = await db.query('memo');
@@ -58,6 +68,16 @@ class Memo {
         rack: maps[i]['rack'],
       );
     });
+  }
+
+  // DBにデータを挿入するための関数です。
+  static Future<void> insertMemo(Memo memo) async {
+    final Database db = await database;
+    await db.insert(
+      'memo',
+      memo.toMap(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
   }
 
   // DB内にあるデータを更新するための関数
@@ -81,33 +101,41 @@ class Memo {
       whereArgs: [id],
     );
   }
-} //class Memo
-
-class SearchPageORG extends StatefulWidget {
-  const SearchPageORG({Key? key}) : super(key: key);
-
-  @override
-  _SearchPageState createState() => _SearchPageState();
-}
-
-class _SearchPageState extends State<SearchPageORG> {
-  TextEditingController? controller;
-  bool isCaseSensitive = false;
-  List<Memo> _memoList = [];
-
 
   Future<String> initializeDemo() async {
-    _memoList = await Memo.getMemos();
-    return Future.delayed(new Duration(seconds: 1), () {
+    _memoList = await getMemos();
+    return Future.delayed(const Duration(seconds: 1), () {
       return "initializeDemo completed!!";
     });
   }
 
+  // 具体的なデータ
+  var fido = Memo(
+    id: 0,
+    rack: '35',
+    text: '1',
+  );
+
+  /*
+  var bobo = Dog(
+    id: 1,
+    location: 'Bobo',
+    rack: '17',
+    contaner: '2',
+    part: '2',
+  );
+  */
+  // データベースにDogのデータを挿入
+  //insertData(fido);
+  //await insertDog(bobo);
+
   final List<String> searchTargets =
       List.generate(10, (index) => 'Something ${index + 1}');
 
-  List<String> searchResults = [];
+  // 挿入
+  //insertMemo(Memo memo);
 
+  List<String> searchResults = [];
   void search(String query, {bool isCaseSensitive = false}) {
     if (query.isEmpty) {
       setState(() {
@@ -132,6 +160,9 @@ class _SearchPageState extends State<SearchPageORG> {
   void initState() {
     super.initState();
     controller = TextEditingController();
+    initializeDemo();
+    insertMemo(fido);
+    //_memoList = await getMemos();
   }
 
   @override
@@ -140,7 +171,6 @@ class _SearchPageState extends State<SearchPageORG> {
     controller!.dispose();
   }
 
- 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -151,17 +181,6 @@ class _SearchPageState extends State<SearchPageORG> {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            Center(
-              child: FutureBuilder(
-                future: initializeDemo(),
-                builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
-                  // 通信中はスピナーを表示
-                  if (snapshot.connectionState != ConnectionState.done) {
-                    return CircularProgressIndicator();
-                  }
-                },
-              ),
-            ),
             SwitchListTile(
               title: const Text('Case Sensitive'),
               value: isCaseSensitive,
@@ -188,7 +207,7 @@ class _SearchPageState extends State<SearchPageORG> {
             ),
             TextField(
               controller: controller,
-              decoration: InputDecoration(hintText: 'Enter keyword'),
+              decoration: const InputDecoration(hintText: 'Enter keyword'),
               onChanged: (String val) {
                 search(val, isCaseSensitive: isCaseSensitive);
               },
@@ -207,6 +226,7 @@ class _SearchPageState extends State<SearchPageORG> {
                 );
               },
             ),
+            Text(searchResults.toString()),
           ],
         ),
       ),

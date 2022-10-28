@@ -145,7 +145,7 @@ class _MySqlPageState extends State<MySqlPage> {
 
   Future<String> initializeDemo() async {
     _memoList = await Memo.getMemos();
-    return Future.delayed(new Duration(seconds: 1), () {
+    return Future.delayed(Duration(seconds: 1), () {
       return "initializeDemo completed!!";
     });
   }
@@ -159,7 +159,7 @@ class _MySqlPageState extends State<MySqlPage> {
   void _savewrdo(String Word) {
     if (fast) {
       var farst = Word;
-      _text = "Fast parameters"+ Word;
+      _text = "Fast parameters" + Word;
       print('Fast: $Word');
       fast = !fast;
       print(fast);

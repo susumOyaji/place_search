@@ -36,7 +36,7 @@ class Dog {
   String toString() {
     return 'Dog{id: $id, Location: $location, Rack: $rack, Contaner: $contaner, Part:$part}';
   }
-}
+} //DogClass
 
 void main() async {
   // このソースコードはWidgetで視覚化しておらず、結果は全てコンソール上に出力しています。
@@ -59,8 +59,6 @@ void main() async {
     version: 1,
   );
 
-  
-  
   // DBにデータを挿入するための関数です。
   Future<void> insertDog(Dog dog) async {
     // データベースのリファレンスを取得します。
@@ -72,8 +70,6 @@ void main() async {
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
   }
-
-
 
   Future<List<Dog>> dogs() async {
     final Database db = await database;
