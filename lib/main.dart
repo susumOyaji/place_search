@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'ToDo.dart';
 import 'search_pageORG.dart';
 import 'main3.dart';
+import 'view/cat_list.dart';
 
 void main() {
   runApp(const MyApp());
@@ -15,11 +16,15 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
+      initialRoute: '/',
+      routes: <String, WidgetBuilder>{
+        '/': (_) => const CatList(),       //cat_list.dartを呼び出し
+      },
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home:
-          const SearchPageORG(), //const MyHomePage(title: 'Flutter Demo Home Page'),
+      //home:
+      //    const SearchPageORG(), //const MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
 }

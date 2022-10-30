@@ -38,6 +38,7 @@ class _SearchPageState extends State<SearchPageORG> {
   TextEditingController? controller;
   bool isCaseSensitive = false;
   List<Memo> _memoList = [];
+  List widgets = [];
 
   static Future<Database> get database async {
     final Future<Database> _database = openDatabase(
@@ -102,11 +103,12 @@ class _SearchPageState extends State<SearchPageORG> {
     );
   }
 
-  Future<String> initializeDemo() async {
+  Future<List<Memo>> initializeMemo() async {
     _memoList = await getMemos();
-    return Future.delayed(const Duration(seconds: 1), () {
-      return "initializeDemo completed!!";
-    });
+    //return Future.delayed(const Duration(seconds: 3), () {
+    return _memoList;
+    "initializeDemo completed!!";
+    //});
   }
 
   // 具体的なデータ
@@ -129,13 +131,55 @@ class _SearchPageState extends State<SearchPageORG> {
   //insertData(fido);
   //await insertDog(bobo);
 
-  final List<String> searchTargets =
+  @override
+  void initState() {
+    super.initState();
+    controller = TextEditingController();
+
+    insertMemo(fido);
+    _load();
+    print(fido);
+  }
+
+  void _load() async {
+    List<Memo> _dowresponce = await initializeMemo();
+    indicator();
+
+    setState(() {
+      widgets = _dowresponce;
+    });
+  }
+
+  indicator() {
+    if (showLoadingDialog()) {
+      return Center(child: CircularProgressIndicator());
+    } else {
+      return;
+    }
+  }
+
+  showLoadingDialog() {
+    if (widgets.isEmpty) {
+      return true;
+    }
+    return false;
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    controller!.dispose();
+  }
+
+  final List<String> searchTargets = 
       List.generate(10, (index) => 'Something ${index + 1}');
 
   // 挿入
   //insertMemo(Memo memo);
 
   List<String> searchResults = [];
+
+  //query to input Deta
   void search(String query, {bool isCaseSensitive = false}) {
     if (query.isEmpty) {
       setState(() {
@@ -157,78 +201,61 @@ class _SearchPageState extends State<SearchPageORG> {
   }
 
   @override
-  void initState() {
-    super.initState();
-    controller = TextEditingController();
-    initializeDemo();
-    insertMemo(fido);
-    //_memoList = await getMemos();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    controller!.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Search Items'),
+        title: Text('SqlApp'),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            SwitchListTile(
-              title: const Text('Case Sensitive'),
-              value: isCaseSensitive,
-              onChanged: (bool newVal) {
-                setState(() {
-                  isCaseSensitive = newVal;
-                });
-                search(controller!.text, isCaseSensitive: newVal);
-              },
+      body: Column(
+        children: [
+          SwitchListTile(
+            title: const Text('Case Sensitive'),
+            value: isCaseSensitive,
+            onChanged: (bool newVal) {
+              setState(() {
+                isCaseSensitive = newVal;
+              });
+              search(controller!.text, isCaseSensitive: newVal);
+            },
+          ),
+          TextField(
+            controller: controller,
+            decoration: InputDecoration(
+              hintText: 'Enter Barcodeword',
+              enabledBorder: OutlineInputBorder(
+                  //何もしていない時の挙動、見た目
+                  borderRadius: BorderRadius.circular(30),
+                  borderSide: const BorderSide(
+                    color: Colors.greenAccent,
+                  )),
+              focusedBorder: OutlineInputBorder(
+                  //フォーカスされた時の挙動、見た目
+                  borderRadius: BorderRadius.circular(30),
+                  borderSide: const BorderSide(
+                    color: Colors.amber,
+                  )),
             ),
-            ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: searchResults.length,
-              itemBuilder: (BuildContext context, int index) {
-                return ListTile(
-                  title: HighlightedText(
-                    wholeString: searchResults[index],
-                    highlightedString: controller!.text,
-                    isCaseSensitive: isCaseSensitive,
-                  ),
-                );
-              },
-            ),
-            TextField(
-              controller: controller,
-              decoration: const InputDecoration(hintText: 'Enter keyword'),
-              onChanged: (String val) {
-                search(val, isCaseSensitive: isCaseSensitive);
-              },
-            ),
-            ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: searchResults.length,
-              itemBuilder: (BuildContext context, int index) {
-                return ListTile(
-                  title: HighlightedText(
-                    wholeString: searchResults[index],
-                    highlightedString: controller!.text,
-                    isCaseSensitive: isCaseSensitive,
-                  ),
-                );
-              },
-            ),
-            Text(searchResults.toString()),
-          ],
-        ),
+            onChanged: (String val) {
+              //ユーザーがデバイス上でTextFieldの値を変更した場合のみ発動される.
+              search(val, isCaseSensitive: isCaseSensitive);
+            },
+          ),
+          ListView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: searchResults.length,
+            itemBuilder: (BuildContext context, int index) {
+              return ListTile(
+                title: HighlightedText(
+                  wholeString: searchResults[index],
+                  highlightedString: controller!.text,
+                  isCaseSensitive: isCaseSensitive,
+                ),
+              );
+            },
+          ),
+          Text(_memoList.toString()),
+        ],
       ),
     );
   }
