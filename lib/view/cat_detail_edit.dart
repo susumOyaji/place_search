@@ -167,8 +167,8 @@ class _CatDetailEditState extends State<CatDetailEdit> {
       child: ElevatedButton(
         child: const Text('保存'),
         style: ElevatedButton.styleFrom(
-          onPrimary: Colors.white,
-          primary: isFormValid ? Colors.redAccent : Colors.grey.shade700,
+          foregroundColor: Colors.white,
+          backgroundColor: isFormValid ? Colors.redAccent : Colors.grey.shade700,
         ),
         onPressed: createOrUpdateCat, // 保存ボタンを押したら実行する処理を指定する
       ),

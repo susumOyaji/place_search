@@ -95,7 +95,7 @@ class _MyHomePageState extends State<MyHomePage> {
   };
 
   void expand() {
-    var newList = new List.from(area)..addAll(board);
+    var newList = List.from(area)..addAll(board);
     print(newList);
     // [a, b, c, d]
 

@@ -39,6 +39,9 @@ class _SearchPageState extends State<SearchPageORG> {
   bool isCaseSensitive = false;
   List<Memo> _memoList = [];
   List widgets = [];
+  bool isLoading = false; //テーブル読み込み中の状態を保有する
+
+
 
   static Future<Database> get database async {
     final Future<Database> _database = openDatabase(
@@ -131,6 +134,11 @@ class _SearchPageState extends State<SearchPageORG> {
   //insertData(fido);
   //await insertDog(bobo);
 
+
+
+
+  // Stateのサブクラスを作成し、initStateをオーバーライドすると、wedgit作成時に処理を動かすことができる。
+  // ここでは、初期処理としてCatsの全データを取得する。
   @override
   void initState() {
     super.initState();
@@ -141,29 +149,16 @@ class _SearchPageState extends State<SearchPageORG> {
     print(fido);
   }
 
+  // initStateで動かす処理。
+  // catsテーブルに登録されている全データを取ってくる
   void _load() async {
-    List<Memo> _dowresponce = await initializeMemo();
-    indicator();
-
-    setState(() {
-      widgets = _dowresponce;
-    });
+    setState(() => isLoading = true); //テーブル読み込み前に「読み込み中」の状態にする
+    List<Memo> _dowresponce = await initializeMemo();////catsテーブルを全件読み込む
+    setState(() => isLoading = false); //「読み込み済」の状態にする
+    
   }
 
-  indicator() {
-    if (showLoadingDialog()) {
-      return Center(child: CircularProgressIndicator());
-    } else {
-      return;
-    }
-  }
 
-  showLoadingDialog() {
-    if (widgets.isEmpty) {
-      return true;
-    }
-    return false;
-  }
 
   @override
   void dispose() {
@@ -206,8 +201,12 @@ class _SearchPageState extends State<SearchPageORG> {
       appBar: AppBar(
         title: Text('SqlApp'),
       ),
-      body: Column(
-        children: [
+      body: isLoading //「読み込み中」だったら「グルグル」が表示される
+        ? const Center(
+              child: CircularProgressIndicator(), // これが「グルグル」の処理
+        )
+        :Column(
+          children: [
           SwitchListTile(
             title: const Text('Case Sensitive'),
             value: isCaseSensitive,
@@ -254,7 +253,7 @@ class _SearchPageState extends State<SearchPageORG> {
               );
             },
           ),
-          Text(_memoList.toString()),
+          Text(_dowresponce),
         ],
       ),
     );

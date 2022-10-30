@@ -5,14 +5,14 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
 
 class DatabaseHelper {
-  static final _databaseName = "MyDatabase.db"; // DB名
-  static final _databaseVersion = 1; // 1で固定？
+  static const _databaseName = "MyDatabase.db"; // DB名
+  static const _databaseVersion = 1; // 1で固定？
 
-  static final table = 'my_table'; // テーブル名
+  static const table = 'my_table'; // テーブル名
 
-  static final columnId = '_id'; // 列1
-  static final columnName = 'name'; // 列2
-  static final columnAge = 'age'; // 列3
+  static const columnId = '_id'; // 列1
+  static const columnName = 'name'; // 列2
+  static const columnAge = 'age'; // 列3
 
   // DatabaseHelperクラスをシングルトンにするためのコンストラクタ
   DatabaseHelper._privateConstructor();

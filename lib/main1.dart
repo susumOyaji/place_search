@@ -3,7 +3,7 @@ import './search_page.dart';
 import 'ToDo.dart';
 
 void main() {
-  runApp(ToDo());
+  runApp(const ToDo());
 }
 
 class MyApp extends StatelessWidget {

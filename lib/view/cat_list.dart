@@ -35,7 +35,7 @@ class _CatListPageState extends State<CatList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('猫一覧')),
+      appBar: AppBar(title: const Text('Part一覧')),
       body: isLoading //「読み込み中」だったら「グルグル」が表示される
           ? const Center(
               child: CircularProgressIndicator(), // これが「グルグル」の処理
@@ -56,16 +56,17 @@ class _CatListPageState extends State<CatList> {
                         child: Row(// cardの中身をRowで設定
                             children: <Widget>[
                           // Rowの中身を設定
-                          Container(
+                          //Container(
                               // アイコンを表示
-                              width: 80,
-                              height: 80,
-                              decoration: const BoxDecoration(
-                                  shape: BoxShape.circle, // 丸にする
-                                  image: DecorationImage(
-                                      fit: BoxFit.fill,
-                                      image:
-                                          AssetImage('assets/icon/dora.png')))),
+                          //    width: 80,
+                          //    height: 80,
+                              //decoration: const BoxDecoration(
+                              //    shape: BoxShape.circle, // 丸にする
+                              //    image: DecorationImage(
+                              //        fit: BoxFit.fill,
+                              //        image:
+                              //            AssetImage('assets/icon/dora.png')))),
+                          //),
                           Text(
                             cat.name,
                             style: const TextStyle(fontSize: 30),
