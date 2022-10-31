@@ -40,8 +40,13 @@ class _SearchPageState extends State<SearchPageORG> {
   List<Memo> _memoList = [];
   List widgets = [];
   bool isLoading = false; //テーブル読み込み中の状態を保有する
+  List<Memo> _dowresponce = [];
+  bool isFirst = true;
+  bool isSecond = false;
+  String hintText = 'Scanning to  Anything-Barcode';
 
-
+  String? isFirstString = "";
+  String? isSecondString = "";
 
   static Future<Database> get database async {
     final Future<Database> _database = openDatabase(
@@ -110,7 +115,7 @@ class _SearchPageState extends State<SearchPageORG> {
     _memoList = await getMemos();
     //return Future.delayed(const Duration(seconds: 3), () {
     return _memoList;
-    "initializeDemo completed!!";
+    //"initializeDemo completed!!";
     //});
   }
 
@@ -134,9 +139,6 @@ class _SearchPageState extends State<SearchPageORG> {
   //insertData(fido);
   //await insertDog(bobo);
 
-
-
-
   // Stateのサブクラスを作成し、initStateをオーバーライドすると、wedgit作成時に処理を動かすことができる。
   // ここでは、初期処理としてCatsの全データを取得する。
   @override
@@ -149,24 +151,13 @@ class _SearchPageState extends State<SearchPageORG> {
     print(fido);
   }
 
-  // initStateで動かす処理。
-  // catsテーブルに登録されている全データを取ってくる
-  void _load() async {
-    setState(() => isLoading = true); //テーブル読み込み前に「読み込み中」の状態にする
-    List<Memo> _dowresponce = await initializeMemo();////catsテーブルを全件読み込む
-    setState(() => isLoading = false); //「読み込み済」の状態にする
-    
-  }
-
-
-
   @override
   void dispose() {
     super.dispose();
     controller!.dispose();
   }
 
-  final List<String> searchTargets = 
+  final List<String> searchTargets =
       List.generate(10, (index) => 'Something ${index + 1}');
 
   // 挿入
@@ -183,6 +174,63 @@ class _SearchPageState extends State<SearchPageORG> {
       return;
     }
 
+    if (query.startsWith('A') && isFirst == true) {
+      // 指定した文字列(パターン)で始まるか否かを調べる。
+      setState(() {
+        isFirstString = query;
+        searchResults.clear();
+        isFirst = false;
+        isSecond = true;
+        hintText = 'Bord. to Barcode';
+      });
+      return;
+    }
+
+    if (query.startsWith('B') && isSecond == true) {
+      // 指定した文字列(パターン)で始まるか否かを調べる。
+      setState(() {
+        isFirstString = query;
+        searchResults.clear();
+        isFirst = true;
+        isSecond = true;
+        hintText = 'Area. to Barcode';
+      });
+      return;
+    }
+
+    if (query.startsWith('B') && isFirst == true) {
+      // 指定した文字列(パターン)で始まるか否かを調べる。
+      setState(() {
+        isSecondString = query;
+        searchResults.clear();
+        isFirst = false;
+        isSecond = true;
+        hintText = 'Contaner. to Barcode';
+      });
+      return;
+    }
+
+    if (query.startsWith('C') && isFirst == true) {
+      // 指定した文字列(パターン)で始まるか否かを調べる。
+      setState(() {
+        isFirstString = query;
+        searchResults.clear();
+        isFirst = false;
+        hintText = 'Part. to Barcode';
+      });
+      return;
+      //searcContaners.add(query);
+      //container = container.toSet().toList(); //重複する要素を全て削除する
+      //hitItems = searcContaners;
+    }
+
+    if (query.startsWith('P')) {
+      // 指定した文字列(パターン)で始まるか否かを調べる。
+      //searcParts.add(query);
+      //parts = parts.toSet().toList(); //重複する要素を全て削除する
+      //hitItems = searcParts;
+    }
+
     final List<String> hitItems = searchTargets.where((element) {
       if (isCaseSensitive) {
         return element.contains(query);
@@ -195,67 +243,77 @@ class _SearchPageState extends State<SearchPageORG> {
     });
   }
 
+  // initStateで動かす処理。
+  // catsテーブルに登録されている全データを取ってくる
+  void _load() async {
+    setState(() => isLoading = true); //テーブル読み込み前に「読み込み中」の状態にする
+    _dowresponce = await initializeMemo(); ////catsテーブルを全件読み込む
+    setState(() => isLoading = false); //「読み込み済」の状態にする
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('SqlApp'),
+        title: const Text('SqlApp'),
       ),
       body: isLoading //「読み込み中」だったら「グルグル」が表示される
-        ? const Center(
+          ? const Center(
               child: CircularProgressIndicator(), // これが「グルグル」の処理
-        )
-        :Column(
-          children: [
-          SwitchListTile(
-            title: const Text('Case Sensitive'),
-            value: isCaseSensitive,
-            onChanged: (bool newVal) {
-              setState(() {
-                isCaseSensitive = newVal;
-              });
-              search(controller!.text, isCaseSensitive: newVal);
-            },
-          ),
-          TextField(
-            controller: controller,
-            decoration: InputDecoration(
-              hintText: 'Enter Barcodeword',
-              enabledBorder: OutlineInputBorder(
-                  //何もしていない時の挙動、見た目
-                  borderRadius: BorderRadius.circular(30),
-                  borderSide: const BorderSide(
-                    color: Colors.greenAccent,
-                  )),
-              focusedBorder: OutlineInputBorder(
-                  //フォーカスされた時の挙動、見た目
-                  borderRadius: BorderRadius.circular(30),
-                  borderSide: const BorderSide(
-                    color: Colors.amber,
-                  )),
-            ),
-            onChanged: (String val) {
-              //ユーザーがデバイス上でTextFieldの値を変更した場合のみ発動される.
-              search(val, isCaseSensitive: isCaseSensitive);
-            },
-          ),
-          ListView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: searchResults.length,
-            itemBuilder: (BuildContext context, int index) {
-              return ListTile(
-                title: HighlightedText(
-                  wholeString: searchResults[index],
-                  highlightedString: controller!.text,
-                  isCaseSensitive: isCaseSensitive,
+            )
+          : Column(
+              children: [
+                SwitchListTile(
+                  title: const Text('Case Sensitive'),
+                  value: isCaseSensitive,
+                  onChanged: (bool newVal) {
+                    setState(() {
+                      isCaseSensitive = newVal;
+                    });
+                    search(controller!.text, isCaseSensitive: newVal);
+                  },
                 ),
-              );
-            },
-          ),
-          Text(_dowresponce),
-        ],
-      ),
+                Text(isFirstString.toString()),
+                TextField(
+                  controller: controller,
+                  decoration: InputDecoration(
+                    hintText: hintText,
+                    enabledBorder: OutlineInputBorder(
+                        //何もしていない時の挙動、見た目
+                        borderRadius: BorderRadius.circular(30),
+                        borderSide: const BorderSide(
+                          color: Colors.greenAccent,
+                        )),
+                    focusedBorder: OutlineInputBorder(
+                        //フォーカスされた時の挙動、見た目
+                        borderRadius: BorderRadius.circular(30),
+                        borderSide: const BorderSide(
+                          color: Colors.amber,
+                        )),
+                  ),
+                  onChanged: (String val) {
+                    //ユーザーがデバイス上でTextFieldの値を変更した場合のみ発動される.
+                    search(val, isCaseSensitive: isCaseSensitive);
+                    controller?.clear(); //リセット処理
+                  },
+                ),
+                ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: searchResults.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return ListTile(
+                      title: HighlightedText(
+                        wholeString: searchResults[index],
+                        highlightedString: controller!.text,
+                        isCaseSensitive: isCaseSensitive,
+                      ),
+                    );
+                  },
+                ),
+                Text(_dowresponce.toString()),
+              ],
+            ),
     );
   }
 }

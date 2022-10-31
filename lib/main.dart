@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       initialRoute: '/',
       routes: <String, WidgetBuilder>{
-        '/': (_) => const CatList(),       //cat_list.dartを呼び出し
+        '/': (_) => const SearchPageORG(), //cat_list.dartを呼び出し
       },
       theme: ThemeData(
         primarySwatch: Colors.blue,
