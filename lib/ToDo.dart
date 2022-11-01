@@ -94,7 +94,7 @@ class Memo {
 } //class Memo
 
 void main() {
-  runApp(ToDo());
+  runApp(const ToDo());
 }
 
 class ToDo extends StatelessWidget {
@@ -145,7 +145,7 @@ class _MySqlPageState extends State<MySqlPage> {
 
   Future<String> initializeDemo() async {
     _memoList = await Memo.getMemos();
-    return Future.delayed(Duration(seconds: 1), () {
+    return Future.delayed(const Duration(seconds: 1), () {
       return "initializeDemo completed!!";
     });
   }
@@ -246,7 +246,7 @@ class _MySqlPageState extends State<MySqlPage> {
   }
 
   Future<String> sampleFutureFunc() async {
-    return Future.delayed(new Duration(seconds: 5), () {
+    return Future.delayed(const Duration(seconds: 5), () {
       return "completed!!";
     });
   }
@@ -255,7 +255,7 @@ class _MySqlPageState extends State<MySqlPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('SqlApp'),
+        title: const Text('SqlApp'),
       ),
       body: Column(
         children: [
@@ -268,7 +268,7 @@ class _MySqlPageState extends State<MySqlPage> {
                     child: Text(snapshot.data),
                   );
                 } else {
-                  return CircularProgressIndicator();
+                  return const CircularProgressIndicator();
                 }
               },
             ),
@@ -285,7 +285,7 @@ class _MySqlPageState extends State<MySqlPage> {
           ),
           Text(
             "$_text",
-            style: TextStyle(
+            style: const TextStyle(
                 color: Colors.orangeAccent,
                 fontSize: 20.0,
                 fontWeight: FontWeight.w500),
@@ -297,13 +297,13 @@ class _MySqlPageState extends State<MySqlPage> {
               enabledBorder: OutlineInputBorder(
                   //何もしていない時の挙動、見た目
                   borderRadius: BorderRadius.circular(30),
-                  borderSide: BorderSide(
+                  borderSide: const BorderSide(
                     color: Colors.greenAccent,
                   )),
               focusedBorder: OutlineInputBorder(
                   //フォーカスされた時の挙動、見た目
                   borderRadius: BorderRadius.circular(30),
-                  borderSide: BorderSide(
+                  borderSide: const BorderSide(
                     color: Colors.amber,
                   )),
             ),

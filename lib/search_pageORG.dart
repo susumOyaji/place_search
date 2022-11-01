@@ -42,11 +42,13 @@ class _SearchPageState extends State<SearchPageORG> {
   bool isLoading = false; //テーブル読み込み中の状態を保有する
   List<Memo> _dowresponce = [];
   bool isFirst = true;
-  bool isSecond = false;
+  bool isSecond = true;
+  bool isThird = true;
+  bool isSub = true;
   String hintText = 'Scanning to  Anything-Barcode';
 
-  String? isFirstString = "";
-  String? isSecondString = "";
+  String isFirstString = "";
+  String isSecondString = "";
 
   static Future<Database> get database async {
     final Future<Database> _database = openDatabase(
@@ -174,48 +176,66 @@ class _SearchPageState extends State<SearchPageORG> {
       return;
     }
 
-    if (query.startsWith('A') && isFirst == true) {
+    if (isFirst == true) {
       // 指定した文字列(パターン)で始まるか否かを調べる。
       setState(() {
         isFirstString = query;
         searchResults.clear();
         isFirst = false;
         isSecond = true;
-        hintText = 'Bord. to Barcode';
+
+        hintText = 'Second to Barcode';
       });
       return;
     }
 
-    if (query.startsWith('B') && isSecond == true) {
-      // 指定した文字列(パターン)で始まるか否かを調べる。
-      setState(() {
-        isFirstString = query;
-        searchResults.clear();
-        isFirst = true;
-        isSecond = true;
-        hintText = 'Area. to Barcode';
-      });
-      return;
-    }
-
-    if (query.startsWith('B') && isFirst == true) {
+    if (isSecond == true) {
       // 指定した文字列(パターン)で始まるか否かを調べる。
       setState(() {
         isSecondString = query;
         searchResults.clear();
-        isFirst = false;
-        isSecond = true;
-        hintText = 'Contaner. to Barcode';
+        isFirst = true;
+        isSecond = false;
       });
-      return;
     }
 
-    if (query.startsWith('C') && isFirst == true) {
+    if (isFirstString.startsWith('a') && isSecondString.startsWith('b')) {
+      hintText = 'Good 1st. to Barcode';
+    }
+    if (isFirstString.startsWith('b') && isSecondString.startsWith('c')) {
+      hintText = 'Good 2nd. to Barcode';
+    }
+    if (isFirstString.startsWith('c') && isSecondString.startsWith('d')) {
+      hintText = 'Good 3nd. to Barcode';
+    }
+
+    switch (isFirstString.substring(0, 1)) {
+      case 'a':
+        if (isSecondString.startsWith('b')) {
+          hintText = 'Good 1st. to Barcode';
+        }
+        break;
+      case 'b':
+        if (isSecondString.startsWith('c')) {
+          hintText = 'Good 1st. to Barcode';
+        }
+        break;
+      case 'c':
+        if (isSecondString.startsWith('p')) {
+          hintText = 'Good 1st. to Barcode';
+        }
+        break;
+    }
+
+    /*
+    if (query.startsWith('c') && isThird == true) {
       // 指定した文字列(パターン)で始まるか否かを調べる。
       setState(() {
         isFirstString = query;
         searchResults.clear();
         isFirst = false;
+        isSecond = false;
+        isThird = true;
         hintText = 'Part. to Barcode';
       });
       return;
@@ -224,12 +244,21 @@ class _SearchPageState extends State<SearchPageORG> {
       //hitItems = searcContaners;
     }
 
-    if (query.startsWith('P')) {
+    if (query.startsWith('p') && isThird == true) {
       // 指定した文字列(パターン)で始まるか否かを調べる。
+      setState(() {
+        isFirstString = query;
+        searchResults.clear();
+        isFirst = false;
+        hintText = 'Contaner. to Barcode';
+      });
+      return;
+
       //searcParts.add(query);
       //parts = parts.toSet().toList(); //重複する要素を全て削除する
       //hitItems = searcParts;
     }
+    */
 
     final List<String> hitItems = searchTargets.where((element) {
       if (isCaseSensitive) {
@@ -273,7 +302,14 @@ class _SearchPageState extends State<SearchPageORG> {
                     search(controller!.text, isCaseSensitive: newVal);
                   },
                 ),
-                Text(isFirstString.toString()),
+                Container(
+                    child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                        'FirstString: ${isFirstString}   \nSecondString: ${isSecondString}'),
+                  ],
+                )),
                 TextField(
                   controller: controller,
                   decoration: InputDecoration(
