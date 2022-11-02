@@ -3,27 +3,36 @@ import 'package:sqflite/sqflite.dart';
 import 'dart:async';
 import 'package:path/path.dart';
 import './highlighted_text.dart';
-import 'dart:io';
+//import 'dart:io';
 
 class Memo {
   final int id;
-  final String text;
   final String rack;
+  final String board;
+  final String container;
+  final String parts;
 
-  Memo({required this.id, required this.text, required this.rack});
+  Memo(
+      {required this.id,
+      required this.rack,
+      required this.board,
+      required this.container,
+      required this.parts});
 
   Map<String, dynamic> toMap() {
     return {
-      'id': id,
-      'text': text,
-      'rack': rack,
+      //'id': id,
+      'Rack': rack,
+      'Board': board,
+      'Container': container,
+      'Parts': parts,
     };
   }
 
   //printで見やすくするための実装
   @override
   String toString() {
-    return 'Memo{id: $id, text: $text, rack: $rack}';
+    return 'Memo{id: $id, Rack: $rack, Board: $board,Container: $container,Parts:$parts}';
   }
 } //class Memo
 
@@ -42,26 +51,28 @@ class _SearchPageState extends State<SearchPageORG> {
   bool isLoading = false; //テーブル読み込み中の状態を保有する
   List<Memo> _dowresponce = [];
   bool isFirst = true;
-  bool isSecond = true;
-  bool isThird = true;
-  bool isSub = true;
+  bool isSecond = false;
+  //bool isThird = true;
+  //bool isSub = true;
   String hintText = 'Scanning to  Anything-Barcode';
 
   String isFirstString = "";
   String isSecondString = "";
 
+  // databaseをオープンしてインスタンス化する
   static Future<Database> get database async {
     final Future<Database> _database = openDatabase(
       // pathをデータベースに設定しています。
       // 'path'パッケージからの'join'関数を使用する事は、DBをお互い（iOS, Android）のプラットフォームに構築し、
       // pathを確保するのに良い方法です。
-      join(await getDatabasesPath(), 'memo_database1.db'),
+      join(await getDatabasesPath(),
+          'memo_database22.db'), // memo_database2.dbのパスを取得する
 
       // Memo テーブルのデータベースを作成しています。
       // ここではSQLの解説は省きます。
       onCreate: (db, version) {
         return db.execute(
-          "CREATE TABLE memo(id INTEGER PRIMARY KEY AUTOINCREMENT, text TEXT, rack TEXT)",
+          "CREATE TABLE memo(id INTEGER PRIMARY KEY AUTOINCREMENT,rack TEXT,board TEXT,container TEXT,parts TEXT)",
         );
       },
       version: 1,
@@ -69,14 +80,17 @@ class _SearchPageState extends State<SearchPageORG> {
     return _database;
   }
 
-  static Future<List<Memo>> getMemos() async {
+  // catsテーブルのデータを全件取得する
+  static Future<List<Memo>> selectAllMemos() async {
     final Database db = await database;
     final List<Map<String, dynamic>> maps = await db.query('memo');
     return List.generate(maps.length, (i) {
       return Memo(
         id: maps[i]['id'],
-        text: maps[i]['text'],
         rack: maps[i]['rack'],
+        board: maps[i]['board'],
+        container: maps[i]['container'],
+        parts: maps[i]['parts'],
       );
     });
   }
@@ -114,7 +128,7 @@ class _SearchPageState extends State<SearchPageORG> {
   }
 
   Future<List<Memo>> initializeMemo() async {
-    _memoList = await getMemos();
+    _memoList = await selectAllMemos();
     //return Future.delayed(const Duration(seconds: 3), () {
     return _memoList;
     //"initializeDemo completed!!";
@@ -122,11 +136,13 @@ class _SearchPageState extends State<SearchPageORG> {
   }
 
   // 具体的なデータ
-  var fido = Memo(
-    id: 0,
-    rack: '35',
-    text: '1',
-  );
+  //var fido = Memo(
+  //  id: 0,
+  //  rack: 'rack',
+  //  board: '1',
+  //  container: '2',
+  //  parts: '3',
+  //);
 
   /*
   var bobo = Dog(
@@ -137,6 +153,7 @@ class _SearchPageState extends State<SearchPageORG> {
     part: '2',
   );
   */
+  //insertMemo(fido); // catの内容で追加する
   // データベースにDogのデータを挿入
   //insertData(fido);
   //await insertDog(bobo);
@@ -148,9 +165,8 @@ class _SearchPageState extends State<SearchPageORG> {
     super.initState();
     controller = TextEditingController();
 
-    insertMemo(fido);
+    //insertMemo(fido);
     _load();
-    print(fido);
   }
 
   @override
@@ -178,53 +194,62 @@ class _SearchPageState extends State<SearchPageORG> {
 
     if (isFirst == true) {
       // 指定した文字列(パターン)で始まるか否かを調べる。
-      setState(() {
-        isFirstString = query;
-        searchResults.clear();
-        isFirst = false;
-        isSecond = true;
-
-        hintText = 'Second to Barcode';
-      });
-      return;
+      String q = query.substring(0, 1);
+      if (q == 'a' || q == 'b' || q == 'c' || q == 'p') {
+        setState(() {
+          hintText = 'Second to Barcode';
+          isFirstString = query;
+          searchResults.clear();
+          isFirst = false;
+          isSecond = true;
+        });
+        return;
+      } else {
+        hintText = 'Bad! to Barcode';
+        return;
+      }
     }
 
     if (isSecond == true) {
       // 指定した文字列(パターン)で始まるか否かを調べる。
-      setState(() {
-        isSecondString = query;
-        searchResults.clear();
-        isFirst = true;
-        isSecond = false;
-      });
+      String q = query.substring(0, 1);
+      if (q == 'b' || q == 'c' || q == 'p') {
+        setState(() {
+          isSecondString = query;
+          searchResults.clear();
+          isFirst = true;
+          isSecond = false;
+        });
+      } else {
+        hintText = 'Bad! to Barcode';
+        return;
+      }
     }
 
     if (isFirstString.startsWith('a') && isSecondString.startsWith('b')) {
       hintText = 'Good 1st. to Barcode';
+      var fido = Memo(
+        id: 0,
+        rack: isFirstString,
+        board: isSecondString,
+        container: 'non',
+        parts: 'non',
+      );
+      insertMemo(fido);
+      //deleteMemo(0);
     }
     if (isFirstString.startsWith('b') && isSecondString.startsWith('c')) {
       hintText = 'Good 2nd. to Barcode';
-    }
-    if (isFirstString.startsWith('c') && isSecondString.startsWith('d')) {
-      hintText = 'Good 3nd. to Barcode';
-    }
 
-    switch (isFirstString.substring(0, 1)) {
-      case 'a':
-        if (isSecondString.startsWith('b')) {
-          hintText = 'Good 1st. to Barcode';
-        }
-        break;
-      case 'b':
-        if (isSecondString.startsWith('c')) {
-          hintText = 'Good 1st. to Barcode';
-        }
-        break;
-      case 'c':
-        if (isSecondString.startsWith('p')) {
-          hintText = 'Good 1st. to Barcode';
-        }
-        break;
+      //final asmap = _memoList.asMap(); //リストをMap型に変換する。
+      final result = _memoList.contains('b'); //リストの要素に指定した要素が含まれているかを判定する。
+      //asmap.containsValue("b"); //指定した値が連想配列(Map)のvalueにあるかどうかを判定する。
+      print(_memoList);
+
+      print(result);
+    }
+    if (isFirstString.startsWith('c') && isSecondString.startsWith('p')) {
+      hintText = 'Good 3nd. to Barcode';
     }
 
     /*
@@ -276,7 +301,7 @@ class _SearchPageState extends State<SearchPageORG> {
   // catsテーブルに登録されている全データを取ってくる
   void _load() async {
     setState(() => isLoading = true); //テーブル読み込み前に「読み込み中」の状態にする
-    _dowresponce = await initializeMemo(); ////catsテーブルを全件読み込む
+    _dowresponce = await initializeMemo(); ////Memosテーブルを全件読み込む
     setState(() => isLoading = false); //「読み込み済」の状態にする
   }
 
@@ -347,7 +372,12 @@ class _SearchPageState extends State<SearchPageORG> {
                     );
                   },
                 ),
-                Text(_dowresponce.toString()),
+                Container(
+                    child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                      Text(_dowresponce.toString()),
+                    ])),
               ],
             ),
     );
