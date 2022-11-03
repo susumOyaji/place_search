@@ -46,10 +46,13 @@ class SearchPageORG extends StatefulWidget {
 class _SearchPageState extends State<SearchPageORG> {
   TextEditingController? controller;
   bool isCaseSensitive = false;
-  List<Memo> _memoList = [];
+  //List<Memo> _memoList = [];
+  //List<Map<String, dynamic>> _memoList1 = [];
   List widgets = [];
   bool isLoading = false; //テーブル読み込み中の状態を保有する
   List<Memo> _dowresponce = [];
+  List<Map<String, dynamic>> _singleList = [];
+
   bool isFirst = true;
   bool isSecond = false;
   //bool isThird = true;
@@ -95,6 +98,12 @@ class _SearchPageState extends State<SearchPageORG> {
     });
   }
 
+  // id=1のデータだけ取得するための関数です。
+  static Future<List<Map<String, dynamic>>> selectMemos(int id) async {
+    final Database db = await database;
+    return db.query('memo', where: "id = ?", whereArgs: [id], limit: 1);
+  }
+
   // DBにデータを挿入するための関数です。
   static Future<void> insertMemo(Memo memo) async {
     final Database db = await database;
@@ -128,9 +137,19 @@ class _SearchPageState extends State<SearchPageORG> {
   }
 
   Future<List<Memo>> initializeMemo() async {
-    _memoList = await selectAllMemos();
+    List<Memo> _memoList = await selectAllMemos();
+
     //return Future.delayed(const Duration(seconds: 3), () {
     return _memoList;
+    //"initializeDemo completed!!";
+    //});
+  }
+
+  Future<List<Map<String, dynamic>>> singleMemo(int id) async {
+    List<Map<String ,dynamic>> _memoList1 = await selectMemos(id);
+
+    //return Future.delayed(const Duration(seconds: 3), () {
+    return _memoList1;
     //"initializeDemo completed!!";
     //});
   }
@@ -242,11 +261,21 @@ class _SearchPageState extends State<SearchPageORG> {
       hintText = 'Good 2nd. to Barcode';
 
       //final asmap = _memoList.asMap(); //リストをMap型に変換する。
-      final result = _memoList.contains('b'); //リストの要素に指定した要素が含まれているかを判定する。
+      //final result = _memoList.contains('b'); //リストの要素に指定した要素が含まれているかを判定する。
       //asmap.containsValue("b"); //指定した値が連想配列(Map)のvalueにあるかどうかを判定する。
-      print(_memoList);
-
+      print(_dowresponce);
+      final result = _dowresponce.any((num) => num == 'Board: b');
       print(result);
+
+      final numbers = [
+        'id: 1',
+        'Rack: a',
+        'Board: b',
+        'Container: non',
+        'Parts:non'
+      ];
+      final result1 = numbers.any((num) => num == 'Board: b');
+      print(result1);
     }
     if (isFirstString.startsWith('c') && isSecondString.startsWith('p')) {
       hintText = 'Good 3nd. to Barcode';
@@ -302,6 +331,7 @@ class _SearchPageState extends State<SearchPageORG> {
   void _load() async {
     setState(() => isLoading = true); //テーブル読み込み前に「読み込み中」の状態にする
     _dowresponce = await initializeMemo(); ////Memosテーブルを全件読み込む
+    _singleList = await singleMemo(0);
     setState(() => isLoading = false); //「読み込み済」の状態にする
   }
 
@@ -376,6 +406,7 @@ class _SearchPageState extends State<SearchPageORG> {
                     child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
+                      Text(_singleList.toString()),
                       Text(_dowresponce.toString()),
                     ])),
               ],
