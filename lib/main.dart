@@ -1,165 +1,181 @@
-import 'package:flutter/material.dart';
-import 'package:place_search/flutterSql.dart';
-import 'ToDo.dart';
-import 'search_pageORG.dart';
-import 'main3.dart';
-import 'view/cat_list.dart';
+import 'dart:async';
+import 'package:flutter/widgets.dart';
+import 'package:path/path.dart';
+import 'package:sqflite/sqflite.dart';
 
-void main() {
-  runApp(const MyApp());
-}
+// SQLiteを使用する際は、下記のパッケージをimportして下さい。
+// sqflite:
+//  path:
 
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+class Dog {
+  final int id;
+  final String location;
+  final String rack;
+  final String board;
+  final String contaner;
+  final String part;
 
-  // This widget is the root of your application.
+  Dog(
+      {required this.id,
+      required this.location,
+      required this.rack,
+      required this.board,
+      required this.contaner,
+      required this.part});
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'Location': location,
+      'Rack': rack,
+      'Board': board,
+      'Contaner': contaner,
+      'Part': part,
+    };
+  }
+
+  //printで見やすくするための実装
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      initialRoute: '/',
-      routes: <String, WidgetBuilder>{
-        '/': (_) => const SearchPageORG(), //cat_list.dartを呼び出し
-      },
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      //home:
-      //    const SearchPageORG(), //const MyHomePage(title: 'Flutter Demo Home Page'),
+  String toString() {
+    return 'Dog{id: $id, Location: $location, Rack: $rack, Board: $board, Contaner: $contaner, Part:$part}';
+  }
+} //DogClass
+
+void main() async {
+  // このソースコードはWidgetで視覚化しておらず、結果は全てコンソール上に出力しています。
+  // 出力結果は最後に表示させます。
+  WidgetsFlutterBinding.ensureInitialized();
+  final database = openDatabase(
+    // pathをデータベースに設定しています。
+    // 'path'パッケージからの'join'関数を使用する事は、DBをお互い（iOS, Android）のプラットフォームに構築し、
+    // pathを確保するのに良い方法です。
+    join(await getDatabasesPath(), 'doggie_database2.db'),
+
+    // dogs テーブルのデータベースを作成しています。
+    // ここではSQLの解説は省きます。
+    onCreate: (db, version) {
+      return db.execute(
+        "CREATE TABLE dogs(id INTEGER PRIMARY KEY AUTOINCREMENT, Location TEXT, Rack TEXT, Board TEXT, Contaner TEXT, Part TEXT )",
+      );
+    },
+    // version 1のSQLiteを使用します。
+    version: 1,
+  );
+
+  // DBにデータを挿入するための関数です。
+  Future<void> insertDog(Dog dog) async {
+    // データベースのリファレンスを取得します。
+    final Database db = await database;
+    // テーブルにDogのデータを入れます。
+    await db.insert(
+      'dogs',
+      dog.toMap(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
     );
   }
-}
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  var area = ['a', 'b'];
-  var board = ['c', 'd'];
-  var container = ['e', 'f'];
-  var parts = ['44KK36886-A'];
-
-  var listM = <List>[];
-  var listB = <List>[];
-  var listT = <List>[];
-  var listP = <List>[];
-
-  var array_1 = [
-    [
-      [
-        [
-          ['43KK49277-AZ'], ['44KK48541-A'], ['44KK36886-A1'], //P1
-          ['43KK49277-AZ'], ['44KK48541-A'], ['44KK36886-A1'],
-          ['43KK49277-AZ'], ['44KK48541-A'], ['44KK36886-A1']
-        ], //T1
-        [
-          ['43KK49277-AZ'], ['44KK48541-A'], ['44KK36886-A1'], //P2
-          ['43KK49277-AZ'], ['44KK48541-A'], ['44KK36886-A1'],
-          ['43KK49277-AZ'], ['44KK48541-A'], ['44KK36886-A1']
-        ],
-        [
-          ['43KK49277-AZ'], ['44KK48541-A'], ['44KK36886-A1'], //P1
-          ['43KK49277-AZ'], ['44KK48541-A'], ['44KK36886-A1'],
-          ['43KK49277-AZ'], ['44KK48541-A'], ['44KK36886-A1']
-        ], //T1
-        [
-          ['43KK49277-AZ'], ['44KK48541-A'], ['44KK36886-A1'], //P2
-          ['43KK49277-AZ'], ['44KK48541-A'], ['44KK36886-A1'],
-          ['43KK49277-AZ'], ['44KK48541-A'], ['44KK36886-A1']
-        ] //T2
-      ], //B1
-      [] //B2
-    ], //M1
-    [] //M2
-  ];
-
-  Map<String, String> frameworks = {
-    'Flutter': 'Dart',
-    'Rails': 'Ruby',
-  };
-
-  void expand() {
-    var newList = List.from(area)..addAll(board);
-    print(newList);
-    // [a, b, c, d]
-
-    var newList2 = [area, board, container].expand((x) => x);
-    print(newList2);
-    // [a, b, c, d, e, f]
-
-    var newList3 = [...area, ...board, ...container, ...parts];
-    print(newList3);
-    // [a, b, c, d, e, f]
-  }
-
-  void _partsAdd() {
-    parts.add('pAdd');
-  }
-
-  void _barcodeSelect(String barcode) {
-    print(barcode);
-  }
-
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
+  Future<List<Dog>> dogs() async {
+    final Database db = await database;
+    final List<Map<String, dynamic>> maps = await db.query('dogs');
+    return List.generate(maps.length, (i) {
+      return Dog(
+        id: maps[i]['id'],
+        location: maps[i]['Location'],
+        rack: maps[i]['Rack'],
+        board: maps[i]['Board'],
+        contaner: maps[i]['Contaner'],
+        part: maps[i]['Part'],
+      );
     });
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
-            ),
-            TextField(
-              //controller: controller,
-              decoration: InputDecoration(hintText: 'Enter keyword'),
-              onChanged: (String val) {
-                _barcodeSelect(val);
-              },
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: expand, //_incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+  void search() async {
+    final Database db = await database;
+    final List<Map<String, dynamic>> maps = await db.query('dogs');
+
+    //条件の指定の例。
+    //final id = 1;
+    //print(await db.query('dogs', where: 'id = ?', whereArgs: [id]));
+
+    //LIKE句を使いたい場合は以下のように書くことができます。
+    //このように書くことで「Flutter」から始まるtextにマッチします。
+    final code = '001';
+    final Results =
+        await db.query('dogs', where: 'board LIKE ?', whereArgs: ['${code}%']);
+
+    if (Results.isEmpty) {}
+
+    print(Results);
+
+    //IN句を使いたい場合は以下のように書くことができます。
+    //final ids = [1, 2];
+    //print(await db.query('dogs', where: 'id IN (${ids.join(', ')})'));
+  }
+
+  // DB内にあるデータを更新するための関数
+  Future<void> updateDog(Dog dog) async {
+    final db = await database;
+
+    await db.update(
+      'dogs',
+      dog.toMap(),
+      where: "id = ?",
+      whereArgs: [dog.id],
     );
   }
+
+  // DBからデータを削除するための関数
+  Future<void> deleteDog(int id) async {
+    // Get a reference to the database.
+    final db = await database;
+
+    // データベースからdogのデータを削除する。
+    // 今回は使用していない。
+    await db.delete(
+      'dogs',
+      where: "id = ?",
+      whereArgs: [id],
+    );
+  }
+
+  // 具体的なデータ
+  var fido = Dog(
+    id: 0,
+    location: 'Fido',
+    board: '001',
+    rack: '35',
+    contaner: '1',
+    part: '1',
+  );
+
+  var bobo = Dog(
+    id: 1,
+    location: 'Bobo',
+    board: '002',
+    rack: '17',
+    contaner: '2',
+    part: '2',
+  );
+
+  // データベースにDogのデータを挿入
+  await insertDog(fido);
+  await insertDog(bobo);
+
+  print(await dogs());
+
+  fido = Dog(
+    id: fido.id,
+    location: fido.location,
+    board: '',
+    rack: fido.rack + '7',
+    contaner: '',
+    part: '',
+  );
+  // データベース内のfidoを更新
+  //await updateDog(fido);
+
+  // fidoのアップデートを表示
+  //print("updated DB");
+  //print(await dogs());
+  search();
 }

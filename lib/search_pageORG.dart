@@ -165,29 +165,6 @@ class _SearchPageState extends State<SearchPageORG> {
     //});
   }
 
-  // 具体的なデータ
-  //var fido = Memo(
-  //  id: 0,
-  //  rack: 'rack',
-  //  board: '1',
-  //  container: '2',
-  //  parts: '3',
-  //);
-
-  /*
-  var bobo = Dog(
-    id: 1,
-    location: 'Bobo',
-    rack: '17',
-    contaner: '2',
-    part: '2',
-  );
-  */
-  //insertMemo(fido); // catの内容で追加する
-  // データベースにDogのデータを挿入
-  //insertData(fido);
-  //await insertDog(bobo);
-
   // Stateのサブクラスを作成し、initStateをオーバーライドすると、wedgit作成時に処理を動かすことができる。
   // ここでは、初期処理としてCatsの全データを取得する。
   @override
@@ -211,6 +188,17 @@ class _SearchPageState extends State<SearchPageORG> {
   // 挿入
   //insertMemo(Memo memo);
 
+  void already() async {
+    final Database db = await database;
+
+    //LIKE句を使いたい場合は以下のように書くことができます。
+    //このように書くことで「Flutter」から始まるtextにマッチします。
+    final text = 'board: b';
+    print(
+        await db.query('memo', where: 'Board LIKE ?', whereArgs: ['${text}%']));
+    print(await selectAllMemos());
+  }
+
   List<String> searchResults = [];
 
   //query to input Deta
@@ -221,6 +209,8 @@ class _SearchPageState extends State<SearchPageORG> {
       });
       return;
     }
+
+    //final List<Map<String, dynamic>> maps = await db.query('memo');
 
     if (isFirst == true) {
       // 指定した文字列(パターン)で始まるか否かを調べる。
@@ -268,6 +258,7 @@ class _SearchPageState extends State<SearchPageORG> {
       insertMemo(fido);
       //deleteMemo(0);
     }
+
     if (isFirstString.startsWith('b') && isSecondString.startsWith('c')) {
       hintText = 'Good 2nd. to Barcode';
 
@@ -275,19 +266,7 @@ class _SearchPageState extends State<SearchPageORG> {
       //final result = _memoList.contains('b'); //リストの要素に指定した要素が含まれているかを判定する。
       //asmap.containsValue("b"); //指定した値が連想配列(Map)のvalueにあるかどうかを判定する。
       print(_singleList);
-      final result = _singleList.any((num) => num == 'Board: b');
-      print(result);
-
-      final numbers = [
-        'id: 1',
-        'Rack: a',
-        'Board: b',
-        'Container: non',
-        'Parts:non'
-      ];
-      final result1 = numbers.any((num) => num == 'Board: b');
-      print(numbers);
-      print(result1);
+      already();
     }
     if (isFirstString.startsWith('c') && isSecondString.startsWith('p')) {
       hintText = 'Good 3nd. to Barcode';

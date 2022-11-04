@@ -1,0 +1,85 @@
+import 'package:flutter/material.dart';
+import 'package:sqflite/sqflite.dart';
+import 'dart:async';
+import 'package:path/path.dart';
+import './highlighted_text.dart';
+
+
+
+
+
+
+
+//データベースに接続する。
+//データベースへの接続を定義しましょう。
+
+//getDatabasesPath()でデータベースファイルを保存するパスを取得します。
+//openDatabase()でデータベースに接続します。
+
+//Memoテーブルの作成をする。
+//openDatabase()の第二引数にonCreate()を定義することで、SQLiteのテーブルを作成することができます。
+
+final Future<Database> database = openDatabase(
+  join(await getDatabasesPath(), 'memo_database.db'),
+  onCreate: (db, version) {
+    return db.execute(
+      "CREATE TABLE memo(id INTEGER PRIMARY KEY, text TEXT, priority INTEGER)",
+    );
+  },
+  version: 1,
+);
+
+
+//openDatabase()は他にも以下のようなことができます。
+//onConfigureでは、SQLiteの設定を行うことができます。
+//onCreateでは初期定義を行います。基本的にはこの中でテーブルを作成してください。
+//onUpgradeではデータ定義の更新を行います。アプリリリース後にデータ定義を変更したいときに利用します。
+//onDowngradeではデータ定義の更新を取り消すときに利用します。
+//readOnlyではデータベースを読み込み専用のデータとして利用したいときにtrueを設定してください。
+
+
+
+//データモデルを定義する。
+//メモを保存するためのテーブルを作成する前に、保存する必要があるテーブルデータを定義してみましょう。
+class Memo {
+  final int id;
+  final String text;
+  final int priority;
+
+  Memo({required this.id, required this.text, required this.priority});
+
+
+
+//データの挿入
+//作ったMemoテーブルにデータを登録しましょう。
+ Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'text': text,
+      'priority': priority,
+    };
+  }
+
+
+}
+
+
+
+
+
+Future<void> insertMemo(Memo memo) async {
+  final Database db = await database;
+  await db.insert(
+    'memo',
+    memo.toMap(),
+    conflictAlgorithm: ConflictAlgorithm.replace,
+  );
+}
+
+final todo = Memo(
+  id: 0, 
+  text: 'Flutterで遊ぶ', 
+  priority: 1,
+);
+
+//await insertMemo(todo);
