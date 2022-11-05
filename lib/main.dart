@@ -99,11 +99,23 @@ void main() async {
 
     //LIKE句を使いたい場合は以下のように書くことができます。
     //このように書くことで「Flutter」から始まるtextにマッチします。
-    final code = '001';
+    final code = '002';
     final Results =
         await db.query('dogs', where: 'board LIKE ?', whereArgs: ['${code}%']);
 
-    if (Results.isEmpty) {}
+    if (Results.isEmpty) {
+      print('empty');
+      return;
+    }
+
+    // ここから検索処理
+    String json = Results.toString();
+
+    RegExp searchstring = RegExp(r'id:...');
+
+    List<String?> searchresuit =
+        searchstring.allMatches(json).map((match) => match.group(0)).toList();
+    print('既に登録しています: $searchresuit');
 
     print(Results);
 
@@ -111,6 +123,9 @@ void main() async {
     //final ids = [1, 2];
     //print(await db.query('dogs', where: 'id IN (${ids.join(', ')})'));
   }
+
+
+  
 
   // DB内にあるデータを更新するための関数
   Future<void> updateDog(Dog dog) async {
