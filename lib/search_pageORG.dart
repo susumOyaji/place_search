@@ -72,13 +72,13 @@ class _SearchPageState extends State<SearchPageORG> {
       // 'path'パッケージからの'join'関数を使用する事は、DBをお互い（iOS, Android）のプラットフォームに構築し、
       // pathを確保するのに良い方法です。
       join(await getDatabasesPath(),
-          'memo_database33.db'), // memo_database2.dbのパスを取得する
+          'memo_database5.db'), // memo_database2.dbのパスを取得する
 
       // Memo テーブルのデータベースを作成しています。
       // ここではSQLの解説は省きます。
       onCreate: (db, version) {
         return db.execute(
-          "CREATE TABLE memo(id INTEGER PRIMARY KEY AUTOINCREMENT,rack TEXT,board TEXT,container TEXT,parts TEXT)",
+          "CREATE TABLE memo(id INTEGER PRIMARY KEY AUTOINCREMENT,location TEXT, rack TEXT,board TEXT,container TEXT,parts TEXT)",
         );
       },
       version: 1,
@@ -93,7 +93,7 @@ class _SearchPageState extends State<SearchPageORG> {
     return List.generate(maps.length, (i) {
       return Memo(
         id: maps[i]['id'],
-        location: maps[i]['Location'],
+        location: maps[i]['location'],
         rack: maps[i]['rack'],
         board: maps[i]['board'],
         container: maps[i]['container'],
@@ -380,6 +380,12 @@ class _SearchPageState extends State<SearchPageORG> {
                   ],
                 )),
                 TextField(
+                  textInputAction: TextInputAction.search,
+                  onSubmitted: (String val) {
+                    //search(val, isCaseSensitive: isCaseSensitive);
+                    //controller?.clear(); //リセット処理
+                    print(val);
+                  },
                   controller: controller,
                   decoration: InputDecoration(
                     hintText: hintText,
@@ -401,6 +407,7 @@ class _SearchPageState extends State<SearchPageORG> {
                     search(val, isCaseSensitive: isCaseSensitive);
                     controller?.clear(); //リセット処理
                   },
+                  
                 ),
                 ListView.builder(
                   shrinkWrap: true,
