@@ -7,6 +7,7 @@ import './highlighted_text.dart';
 
 class Memo {
   final int id;
+  final String location;
   final String rack;
   final String board;
   final String container;
@@ -14,6 +15,7 @@ class Memo {
 
   Memo(
       {required this.id,
+      required this.location,
       required this.rack,
       required this.board,
       required this.container,
@@ -22,6 +24,7 @@ class Memo {
   Map<String, dynamic> toMap() {
     return {
       //'id': id,
+      'Location': location,
       'Rack': rack,
       'Board': board,
       'Container': container,
@@ -32,7 +35,7 @@ class Memo {
   //printで見やすくするための実装
   @override
   String toString() {
-    return 'Memo{id: $id, Rack: $rack, Board: $board,Container: $container,Parts:$parts}';
+    return 'Memo{id: $id, Location: $location, Rack: $rack, Board: $board,Container: $container,Parts:$parts}';
   }
 } //class Memo
 
@@ -69,7 +72,7 @@ class _SearchPageState extends State<SearchPageORG> {
       // 'path'パッケージからの'join'関数を使用する事は、DBをお互い（iOS, Android）のプラットフォームに構築し、
       // pathを確保するのに良い方法です。
       join(await getDatabasesPath(),
-          'memo_database22.db'), // memo_database2.dbのパスを取得する
+          'memo_database33.db'), // memo_database2.dbのパスを取得する
 
       // Memo テーブルのデータベースを作成しています。
       // ここではSQLの解説は省きます。
@@ -90,6 +93,7 @@ class _SearchPageState extends State<SearchPageORG> {
     return List.generate(maps.length, (i) {
       return Memo(
         id: maps[i]['id'],
+        location: maps[i]['Location'],
         rack: maps[i]['rack'],
         board: maps[i]['board'],
         container: maps[i]['container'],
@@ -193,10 +197,28 @@ class _SearchPageState extends State<SearchPageORG> {
 
     //LIKE句を使いたい場合は以下のように書くことができます。
     //このように書くことで「Flutter」から始まるtextにマッチします。
-    final text = 'board: b';
-    print(
-        await db.query('memo', where: 'Board LIKE ?', whereArgs: ['${text}%']));
-    print(await selectAllMemos());
+    final text = '';
+    final Results =
+        await db.query('memo', where: 'board LIKE ?', whereArgs: ['${text}%']);
+
+    if (Results.isEmpty) {
+      print('empty');
+      return;
+    }
+
+    // ここから検索処理
+    String json = Results.toString();
+    RegExp searchstring = RegExp(r'Location:.....');
+
+    List<String?> searchresuit =
+        searchstring.allMatches(json).map((match) => match.group(0)).toList();
+    
+    print('既に$searchresuitに登録されています。');
+
+    print(Results);
+
+
+
   }
 
   List<String> searchResults = [];
@@ -250,6 +272,7 @@ class _SearchPageState extends State<SearchPageORG> {
       hintText = 'Good 1st. to Barcode';
       var fido = Memo(
         id: 0,
+        location: '001',
         rack: isFirstString,
         board: isSecondString,
         container: 'non',
