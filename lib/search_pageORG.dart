@@ -359,7 +359,9 @@ class _SearchPageState extends State<SearchPageORG> {
           ? const Center(
               child: CircularProgressIndicator(), // これが「グルグル」の処理
             )
-          : Column(
+          : SingleChildScrollView(
+          child:
+          Column(
               children: [
                 SwitchListTile(
                   title: const Text('Case Sensitive'),
@@ -380,11 +382,15 @@ class _SearchPageState extends State<SearchPageORG> {
                   ],
                 )),
                 TextField(
+                  autofocus: true,
                   textInputAction: TextInputAction.search,
                   onSubmitted: (String val) {
+                    print(val);
+                    search(val, isCaseSensitive: isCaseSensitive);
+                    controller?.clear(); //リセット処理
                     //search(val, isCaseSensitive: isCaseSensitive);
                     //controller?.clear(); //リセット処理
-                    print(val);
+                    
                   },
                   controller: controller,
                   decoration: InputDecoration(
@@ -403,9 +409,10 @@ class _SearchPageState extends State<SearchPageORG> {
                         )),
                   ),
                   onChanged: (String val) {
+                    
                     //ユーザーがデバイス上でTextFieldの値を変更した場合のみ発動される.
-                    search(val, isCaseSensitive: isCaseSensitive);
-                    controller?.clear(); //リセット処理
+                    //search(val, isCaseSensitive: isCaseSensitive);
+                    //controller?.clear(); //リセット処理
                   },
                   
                 ),
@@ -432,6 +439,7 @@ class _SearchPageState extends State<SearchPageORG> {
                     ])),
               ],
             ),
+          ),
     );
   }
 }
